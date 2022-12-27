@@ -240,14 +240,17 @@ Options.Triggers.push({
           case '0167': // spread exchanged to stack
           case '0169': // donut exchanged to stack
             postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":6,"Color":1291910912,"Delay":5.0,"During":2}`);
+            break;
           case '0164': // spread
           case '0165': // stack exchanged to spread
           case '016A': // donut exchanged to spread
             postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":15,"Color":1291911167,"Delay":5.0,"During":2}`);
+            break;
           case '0166': // stack exchanged to donut
           case '0168': // spread exchanged to donut
           case '016E': // donut
-          postAoe(`{"AoeType":2,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":15,"InnerRadius":6,"Color":1291911167,"Delay":5.0,"During":2}`);
+            postAoe(`{"AoeType":2,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":15,"InnerRadius":6,"Color":1291911167,"Delay":5.0,"During":2}`);
+            break;
         }
 
       },
