@@ -325,6 +325,11 @@ Options.Triggers.push({
         // in either case, trigger should fire 3s before debuff expires
         return 
       },
+      alertText: (data, matches) =>{
+        if (matches.target===data.me) {
+          return matches.effectId==='D48' ? '正面扇形' : '身后扇形';
+        }
+      },
       run: async (data, matches) => {
         const rot = matches.effectId === 'D48' ? 0 : 180;
         const delay=parseFloat(matches.duration) - 4;
