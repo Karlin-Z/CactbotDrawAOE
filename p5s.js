@@ -237,8 +237,7 @@ Options.Triggers.push({
         
       },
     },
-    {
-      id: 'P5S 红宝石之光6',
+    {id: 'P5S 红宝石之光6',
       type: 'StartsUsing',
       netRegex: { id: '76FE'},
       // disabled: true,
@@ -258,8 +257,7 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      id: 'P5S 红宝石之光6 毒圈',
+    {id: 'P5S 红宝石之光6 毒圈',
       type: 'NetworkCancelAbility',
       netRegex: { id: '79FE'},
       condition: (data, matches) => data.RubyParse===6,
@@ -274,35 +272,29 @@ Options.Triggers.push({
         postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${posX},"Y":-300,"Z":${posY}},"OuterRadius":12,"Color":1291845887,"Delay":10,"During":12}`);
       },
     },
-    // {
-    //   //分散分摊三连击
-    //   id: 'P5S 分散分摊三连击',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '771[67]'},
-    //   // disabled: true,
-    //   run:async (data, matches)=>{
-    //     if (matches.id === '7716'){
-    //       data.party.partyIds_.forEach( pids => {
-    //         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":0,"During":9}`);
-    //       }); 
-    //       data.party.healerNames.forEach(name => {
-    //         postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":5,"Color":1677787135,"Delay":5,"During":6}`);
-    //       });
-    //     }
-    //     else{
-    //       data.party.healerNames.forEach(name => {
-    //         postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":5,"Color":1677787135,"Delay":5,"During":9}`);
-    //       });
-    //       data.party.partyIds_.forEach( pids => {
-    //         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":0,"During":6}`);
-    //       }); 
-    //     }
+    {
+      //分散分摊三连击
+      id: 'P5S 分散分摊三连击',
+      type: 'StartsUsing',
+      netRegex: { id: '771[67]'},
+      // disabled: true,
+      run:async (data, matches)=>{
+        if (matches.id === '7716'){
+          data.party.partyIds_.forEach( pids => {
+            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":5,"During":4}`);
+          }); 
+        }
+        else{
+          data.party.partyIds_.forEach( pids => {
+            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":14,"During":4}`);
+          }); 
+        }
 
         
         
         
-    //   },
-    // },
+      },
+    },
     {
       id: 'P5S 双重冲击',
       type: 'StartsUsing',
