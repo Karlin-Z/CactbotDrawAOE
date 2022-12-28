@@ -113,9 +113,7 @@ Options.Triggers.push({
             postAoe(`{"Name":"生命果实2 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
         }
-        if (data.eggParse === 4) {
-          postAoe(`{"Name":"生命果实4 牛头人引导","AoeType":"Sector","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":100},"TrackType":"Nearest","TrackValue":2,"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":9,"Delay":3}`);
-        }
+        
         if (data.eggParse === 6) {
           if (sortedEgg[8] === undefined) {
             console.error(`生命果实6 未找到鸟蛋8`);
@@ -173,10 +171,24 @@ Options.Triggers.push({
           }
 
         }
-        //可能不对
-        if (data.eggParse === 9){
+        if (data.eggParse === 8) {
+          
+          if (sortedEgg[8] === undefined) {
+            console.error(`生命果实8 未找到鸟蛋8`);
+          }
+          else {
+            postAoe(`{"Name":"生命果实8 鸟8","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[8].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+          }
+          if (sortedEgg[9] === undefined) {
+            console.error(`生命果实8 未找到鸟蛋9`);
+          }
+          else {
+            postAoe(`{"Name":"生命果实8 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+          }
 
         }
+        //可能不对
+        
       },
     },
     {
@@ -228,17 +240,7 @@ Options.Triggers.push({
               break;
           }
         }
-        if (data.eggParse === 8) {
-          switch (matches.id) {
-            case '0001':
-            case '0039':
-              postAoe(`{"Name":"生命果实8 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
-              break;
-            default:
-              break;
-          }
-
-        }
+        
         if (data.eggParse === 9){
           if(matches.id==='0006')
           {

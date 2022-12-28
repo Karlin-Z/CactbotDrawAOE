@@ -159,7 +159,7 @@ Options.Triggers.push({
       run: (data, matches) => {
         let col = data.me === matches.target ? 1291845887 : 1291911167;
         let delay = (parseInt(getHeadmarkerId(data, matches),16)-parseInt('004F',16))*2+4.6;
-        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":2,"TrackId":0xE0000000,"OuterRadius":30,"SectorAngle":90,"Color":${col},"Delay":${delay},"During":4}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":90,"Color":${col},"Delay":${delay},"During":4}`);
       },
     },
     {
@@ -167,7 +167,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '788[89]' },
       run: async (data, matches) => {
-        postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.sourceId},"OuterRadius":5,"Color":1291911167,"Delay":0.0,"During":7}`);
+        postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":5,"Color":1291911167,"Delay":0.0,"During":7}`);
       },
     },
     {
@@ -183,19 +183,12 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7869' },
       run: async (data, matches) => {
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":0.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":60.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":120.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":180.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":240.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":300.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":0.0,"During":3.7}`);
-
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":30.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":90.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":150.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":210.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":270.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":330.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.5}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":30.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":150.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":210.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":270.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":330.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
       },
     },
     {
@@ -211,10 +204,10 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7881' },
       run: async (data, matches) => {
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":-90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":-90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
       },
     },
     {
@@ -222,37 +215,10 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7883' },
       run: async (data, matches) => {
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":-80.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
-        postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
-      },
-    },
-    {
-      
-      id: 'P6S 苦痛爆发 处理器',
-      type: 'HeadMarker',
-      netRegex: {},
-      run: async (data, matches) => {
-        const correctedMatch = getHeadmarkerId(data, matches);
-        switch (correctedMatch) {
-          case '0163': // stack
-          case '0167': // spread exchanged to stack
-          case '0169': // donut exchanged to stack
-            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":6,"Color":1291910912,"Delay":5.0,"During":2}`);
-            break;
-          case '0164': // spread
-          case '0165': // stack exchanged to spread
-          case '016A': // donut exchanged to spread
-            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":15,"Color":1291911167,"Delay":5.0,"During":2}`);
-            break;
-          case '0166': // stack exchanged to donut
-          case '0168': // spread exchanged to donut
-          case '016E': // donut
-            postAoe(`{"AoeType":2,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":15,"InnerRadius":6,"Color":1291911167,"Delay":5.0,"During":2}`);
-            break;
-        }
-
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":-80.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
+        postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
       },
     },
     {

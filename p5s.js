@@ -81,11 +81,13 @@ Options.Triggers.push({
       netRegex: { id: '79FE'},
       // disabled: true,
       condition: (data, matches) => data.RubyParse===2,
-      run: (data, matches) => {
-        let duPosX=200-parseFloat(matches.x);
-        let duPosY=200-parseFloat(matches.y);
+      run: async (data, matches) => {
+        let result = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(matches.sourceId, 16)],
+        });
         postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${duPosX},"Y":-300,"Z":${duPosY}},"OuterRadius":12,"Color":1291845887,"Delay":0.0,"During":22}`);
-        let r8=posTo8part(parseFloat(matches.x),parseFloat(matches.y));
+        let r8=posTo8part(result.combatants[0].posX,result.combatants[0].PosY);
         let rr=45;
         if (r8===2 || r8===7) {
           rr=-135;
@@ -104,8 +106,14 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '79FF'},
       // disabled: true,
-      run: (data, matches) => {
-        postAoe(`{"AoeType":3,"PostionType":3,"Postion":${unsafeDirectionPos(parseFloat(matches.x),parseFloat(matches.y))},"TrackMode":1,"Rotation":0.0,"Length":15,"Width":15,"Color":1677787135,"Delay":6.2,"During":2.5}`);
+      run: async (data, matches) => {
+        let result = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(matches.sourceId, 16)],
+        });
+        let posX=result.combatants[0].PosX;
+        let posY=result.combatants[0].PosY;
+        postAoe(`{"AoeType":3,"PostionType":3,"Postion":${unsafeDirectionPos(posX,posY)},"TrackMode":1,"Rotation":0.0,"Length":15,"Width":15,"Color":1677787135,"Delay":7,"During":2.5}`);
         
       },
     },
@@ -190,6 +198,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '76FE'},
       delaySeconds:0.5,
+      suppressSeconds: 1,
       condition: (data, matches) => data.RubyParse===4,
       run: async (data, matches) => {
         if (data.红宝石之光4Dic['SW']===2) {
@@ -222,7 +231,7 @@ Options.Triggers.push({
         if (Math.abs(posX-100)<=1 || Math.abs(posY-100)<=1) {
           postAoe(`{"AoeType":3,"PostionType":3,"Postion":${unsafeDirectionPos(posX,posY)},"TrackMode":1,"Rotation":0.0,"Length":15,"Width":15,"Color":1677787135,"Delay":0,"During":17.5}`);
         } else {
-          postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${matches.x},"Y":-300,"Z":${matches.y}},"OuterRadius":12,"Color":1291845887,"Delay":0.0,"During":22}`);
+          postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${posX},"Y":-300,"Z":${posY}},"OuterRadius":12,"Color":1291845887,"Delay":15,"During":7}`);
           // postAoe('{"AoeType":1,"PostionType":1,"ActorId":0x'+matches.sourceId+',"OuterRadius":12,"Color":838926335,"Delay":0.0,"During":22}');
         }
         
@@ -262,49 +271,38 @@ Options.Triggers.push({
         let posX=result.combatants[0].PosX;
         let posY=result.combatants[0].PosY;
         // postAoe('{"AoeType":1,"PostionType":1,"ActorId":0x'+matches.sourceId+',"OuterRadius":12,"Color":838926335,"Delay":0.0,"During":26}');
-        postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${posX},"Y":-300,"Z":${posY}},"OuterRadius":12,"Color":1291845887,"Delay":0.0,"During":22}`);
+        postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${posX},"Y":-300,"Z":${posY}},"OuterRadius":12,"Color":1291845887,"Delay":10,"During":12}`);
       },
     },
-    {
-      //分散分摊三连击
-      id: 'P5S 分散分摊三连击',
-      type: 'StartsUsing',
-      netRegex: { id: '771[67]'},
-      // disabled: true,
-      run:async (data, matches)=>{
-        if (matches.id === '7716'){
-          data.party.partyIds_.forEach( pids => {
-            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":0,"During":9}`);
-          }); 
-          data.party.healerNames.forEach(name => {
-            postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":12,"Color":1677787135,"Delay":5,"During":6}`);
-          });
-        }
-        else{
-          data.party.healerNames.forEach(name => {
-            postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":5,"Color":1677787135,"Delay":5,"During":9}`);
-          });
-          data.party.partyIds_.forEach( pids => {
-            postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":12,"During":6}`);
-          }); 
-        }
+    // {
+    //   //分散分摊三连击
+    //   id: 'P5S 分散分摊三连击',
+    //   type: 'StartsUsing',
+    //   netRegex: { id: '771[67]'},
+    //   // disabled: true,
+    //   run:async (data, matches)=>{
+    //     if (matches.id === '7716'){
+    //       data.party.partyIds_.forEach( pids => {
+    //         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":0,"During":9}`);
+    //       }); 
+    //       data.party.healerNames.forEach(name => {
+    //         postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":5,"Color":1677787135,"Delay":5,"During":6}`);
+    //       });
+    //     }
+    //     else{
+    //       data.party.healerNames.forEach(name => {
+    //         postAoe(`{"AoeType":1,"PostionType":2,"ActorName":"${name}","OuterRadius":5,"Color":1677787135,"Delay":5,"During":9}`);
+    //       });
+    //       data.party.partyIds_.forEach( pids => {
+    //         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${pids},"OuterRadius":5,"Color":1677787135,"Delay":0,"During":6}`);
+    //       }); 
+    //     }
 
-        let ids=[];
-        data.party.partyIds_.forEach( pids => {
-          ids.push(parseInt(pids, 16))
-        }); 
-        let result = await callOverlayHandler({
-          call: 'getCombatants',
-          ids: ids,
-        });
-        result.combatants.forEach(comb => {
-          if (comb.CurrentHP>0) {
-            postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${comb.PosX},"Y":${comb.PosZ},"Z":${comb.PosY}},"OuterRadius":5,"Color":1677787135,"Delay":12,"During":3}`);
-            }
-        });
         
-      },
-    },
+        
+        
+    //   },
+    // },
     {
       id: 'P5S 双重冲击',
       type: 'StartsUsing',
@@ -330,9 +328,15 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7A03'},
       // disabled: true,
-      run: (data, matches) => {
-          // postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.sourceId},"OuterRadius":12,"Color":838926335,"Delay":0.0,"During":2}`);
-          postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${matches.x},"Y":${matches.z},"Z":${matches.y}},"OuterRadius":12,"Color":1291845887,"Delay":0.0,"During":1.5}`);
+      run: async (data, matches) => {
+          postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.sourceId},"OuterRadius":12,"Color":838926335,"Delay":0.0,"During":2}`);
+              let result = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(matches.sourceId, 16)],
+          });
+        let posX=result.combatants[0].PosX;
+        let posY=result.combatants[0].PosY;
+          postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${posX},"Y":${posY=result.combatants[0].PosZ},"Z":${posY}},"OuterRadius":12,"Color":1291845887,"Delay":0.0,"During":1.5}`);
         
       },
     },
@@ -379,7 +383,7 @@ Options.Triggers.push({
       netRegex: { id: '770E'},
       run: (data, matches) => {
         postAoe(`{"AoeType":3,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":0.0,"Length":40,"Width":40,"Color":1291845887,"Delay":0,"During":8.4}`);
-        postAoe(`{"AoeType":3,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":180.0,"Length":40,"Width":40,"Color":1291845887,"Delay":8.4,"During":3.6}`);
+        postAoe(`{"AoeType":3,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":180.0,"Length":40,"Width":40,"Color":1291845887,"Delay":8.4,"During":3.1}`);
       
       },
     },
