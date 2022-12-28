@@ -45,11 +45,12 @@ Options.Triggers.push({
       地板形状: {},
       连线pos: [],
       不安全地板: {},
+      麻将dellay:0,
     };
   },
   triggers: [
     {
-      id: 'P6S Headmarker Tracker',
+      id: 'P6S Headmarker Own Tracker',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data) => data.decOffset === undefined,
@@ -154,12 +155,32 @@ Options.Triggers.push({
       type: 'HeadMarker',
       netRegex: {},
       condition: (data, matches) => {
-        return (/00(?:4F|5[0-6])/).test(getHeadmarkerId(data, matches));
+        return ((/00(?:4F|5[0-6])/).test(getHeadmarkerId(data, matches)) && data.me === matches.target);
       },
       run: (data, matches) => {
         let col = data.me === matches.target ? 1291845887 : 1291911167;
         let delay = (parseInt(getHeadmarkerId(data, matches),16)-parseInt('004F',16))*2+4.6;
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":90,"Color":${col},"Delay":${delay},"During":4}`);
+      },
+    },
+    {
+      id: '致病孢流 麻将引导提示',
+      type: 'HeadMarker',
+      netRegex: {},
+      condition: (data, matches) => {
+        return ((/00(?:4F|5[0-6])/).test(getHeadmarkerId(data, matches)) && data.me === matches.target);
+      },
+      preRun:(data, matches) => {data.麻将dellay = (parseInt(getHeadmarkerId(data, matches),16)-parseInt('004F',16))*2+4.6;},
+      delaySeconds: (data, matches)=> data.麻将dellay,
+      alertText: (data, matches) => {
+        let point = (parseInt(getHeadmarkerId(data, matches),16)-parseInt('004F',16));
+        if (point===1||point===3||point===5||point===7) {
+          return "2号点引导";
+        }
+        else
+        {
+          return "1号点引导";
+        }
       },
     },
     {
@@ -224,7 +245,7 @@ Options.Triggers.push({
     {
       id: '暗天顶 诱导',
       type: 'Ability',
-      netRegex: { id: '7892' , capture: false },
+      netRegex: { id: '788B' , capture: false },
       run: async (data, matches) => {
         let ids=[];
         data.party.partyIds_.forEach( pids => {
@@ -236,7 +257,7 @@ Options.Triggers.push({
         });
         result.combatants.forEach(comb => {
           if (comb.CurrentHP>0) {
-            postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${comb.PosX},"Y":${comb.cPosZ},"Z":${comb.PosY},"OuterRadius":5,"Color":1291845887,"Delay":0.0,"During":3.7}`);
+            postAoe(`{"AoeType":1,"PostionType":3,"Postion":{"X":${comb.PosX},"Y":0,"Z":${comb.PosY}},"OuterRadius":5,"Color":686358272,"Delay":0.0,"During":5}`);
           }
         });
       },
@@ -257,8 +278,8 @@ Options.Triggers.push({
       type: 'GainsEffect',
       netRegex: { effectId: 'CF9' },
       run: async (data, matches) => {
-        const duration = parseFloat(matches.duration)-4;
-        postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":8,"Color":1291845887,"Delay":${duration},"During":4}`);
+        const duration = parseFloat(matches.duration)-6;
+        postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":8,"Color":1291845887,"Delay":${duration},"During":6}`);
       },
     },
     {

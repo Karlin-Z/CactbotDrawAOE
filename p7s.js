@@ -348,34 +348,32 @@ Options.Triggers.push({
         postAoe(`{"Name":"冲拳","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":40,"Width":25,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":5}`);
       },
     },
-    {
-      id: 'P7S 魔印创造 处理器',
+    {id: 'P7S 魔印创造 处理器',
       type: 'GainsEffect',
       // CEC/D45 = Inviolate Winds
       // CED/D56 = Holy Bonds
       netRegex: { effectId: ['CEC', 'CED', 'D45', 'D56'] },
       run: async (data, matches) => {
-        switch (matches.effectId) {
-          case 'CEC':
-            postAoe(`{"Name":"魔印创造1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":0,"During":9}`);
-            break;
-          case 'CED':
-            postAoe(`{"Name":"魔印创造1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":0,"During":9}`);
-            break;
-          case 'D45':
-            postAoe(`{"Name":"魔印创造2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":15,"During":5}`);
-            break;
-          case 'D56':
-            postAoe(`{"Name":"魔印创造2圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":15,"During":5}`);
-            break;
-          default:
-            break;
-        }
+        // switch (matches.effectId) {
+        //   case 'CEC':
+        //     postAoe(`{"Name":"魔印创造1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":0,"During":9}`);
+        //     break;
+        //   case 'CED':
+        //     postAoe(`{"Name":"魔印创造1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":0,"During":9}`);
+        //     break;
+        //   case 'D45':
+        //     postAoe(`{"Name":"魔印创造2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":15,"During":5}`);
+        //     break;
+        //   case 'D56':
+        //     postAoe(`{"Name":"魔印创造2圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":15,"During":5}`);
+        //     break;
+        //   default:
+        //     break;
+        // }
 
       },
     },
-    {//
-      id: 'P7S 魔印创造·狱 处理器',
+    {id: 'P7S 魔印创造·狱 处理器',
       type: 'GainsEffect',
       // CEE = Purgatory Winds I
       // D3F = Purgatory Winds II
@@ -387,34 +385,34 @@ Options.Triggers.push({
       // D44 = Holy Purgation IV
       netRegex: { effectId: ['CE[EF]', 'D3F', 'D4[01234]'] },
       run: (data, matches) => {
-        switch (matches.effectId) {
-          case 'CEE':
-            postAoe(`{"Name":"魔印创造·狱1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":5,"During":5}`);
-            break;
-          case 'D3F':
-            postAoe(`{"Name":"魔印创造·狱2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":20,"During":5}`);
-            break;
-          case 'D40':
-            postAoe(`{"Name":"魔印创造·狱3风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":35,"During":5}`);
-            break;
-          case 'D41':
-            postAoe(`{"Name":"魔印创造·狱4风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":50,"During":5}`);
-            break;
-          case 'CEF':
-            postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":5,"During":5}`);
-            break;
-          case 'D42':
-            postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":20,"During":5}`);
-            break;
-          case 'D43':
-            postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":35,"During":5}`);
-            break;
-          case 'D44':
-            postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":50,"During":5}`);
-            break;
-          default:
-            break;
-        }
+        // switch (matches.effectId) {
+        //   case 'CEE':
+        //     postAoe(`{"Name":"魔印创造·狱1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":5,"During":5}`);
+        //     break;
+        //   case 'D3F':
+        //     postAoe(`{"Name":"魔印创造·狱2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":20,"During":5}`);
+        //     break;
+        //   case 'D40':
+        //     postAoe(`{"Name":"魔印创造·狱3风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":35,"During":5}`);
+        //     break;
+        //   case 'D41':
+        //     postAoe(`{"Name":"魔印创造·狱4风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":50,"During":5}`);
+        //     break;
+        //   case 'CEF':
+        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":5,"During":5}`);
+        //     break;
+        //   case 'D42':
+        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":20,"During":5}`);
+        //     break;
+        //   case 'D43':
+        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":35,"During":5}`);
+        //     break;
+        //   case 'D44':
+        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":50,"During":5}`);
+        //     break;
+        //   default:
+        //     break;
+        // }
       },
     },
     {
