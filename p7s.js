@@ -359,10 +359,14 @@ Options.Triggers.push({
         let head = result.combatants[0].Heading;
         var dx = Math.sin(c.Heading) * 7;
         var dz = Math.cos(c.Heading) * 7;
-        for (let i = 0; i < 8; i++) {
-          postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + i * dx},"Y":${c.PosZ},"Z":${c.PosY + i * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 0 * dx},"Y":${c.PosZ},"Z":${c.PosY + 0 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 1 * dx},"Y":${c.PosZ},"Z":${c.PosY + 1 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 2 * dx},"Y":${c.PosZ},"Z":${c.PosY + 2 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 3 * dx},"Y":${c.PosZ},"Z":${c.PosY + 3 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 7 * dx},"Y":${c.PosZ},"Z":${c.PosY + 7 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 8 * dx},"Y":${c.PosZ},"Z":${c.PosY + 8 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":21}`);
+          
 
-        }
       },
     },
     {id: 'P7S 奶妈分摊',
