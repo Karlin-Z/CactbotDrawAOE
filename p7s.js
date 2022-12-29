@@ -9,6 +9,14 @@ function postAoe(data) {
     body: data
   });
 }
+function postAoeOld(data) {
+  fetch(`http://127.0.0.1:${aoeport}/DrawAoe`, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: data
+  });
+}
 const sendCommand = (command) => {
   callOverlayHandler({ call: 'PostNamazu', c: 'command', p: `${command}` });
 }
@@ -24,8 +32,7 @@ Options.Triggers.push({
   }),
   triggers: [
     
-    {
-      id: 'P7S 生命的果实 处理器',
+    {id: 'P7S 生命的果实 处理器',
       // Collects combatantData of the eggs
       // combatant.BNpcNameID Mapping:
       //   11375 => Ios 电牛
@@ -43,7 +50,7 @@ Options.Triggers.push({
         // Select the Forbidden Fruits
         const combatantData = await callOverlayHandler({
           call: 'getCombatants',
-          names: '生命之果',
+          names: ['生命之果'],
         });
         // if we could not retrieve combatant data, the
         // trigger will not work, so just resume promise here
@@ -58,19 +65,6 @@ Options.Triggers.push({
         // Sort the combatants for parsing its role in the encounter
         const sortCombatants = (a, b) => (a.ID ?? 0) - (b.ID ?? 0);
         const sortedEgg = combatantData.combatants.sort(sortCombatants);
-        // cactbot-builtin-response
-
-        // Map of dirs to Platform locations
-        // Note: Eggs may spawn in additional cardinals/intercardinals
-        const dirToPlatform = {
-          0: 'left',
-          2: 'right',
-          3: 'right',
-          5: 'south',
-          7: 'left',
-        };
-        // Platforms array used to filter for new platforms
-        const platforms = ['right', 'left', 'south'];
         if (data.eggParse === 1) {
           // Find location of the north-most bird
           // Forbidden Fruit 1 uses last two birds
@@ -78,13 +72,13 @@ Options.Triggers.push({
             console.error(`生命果实1 未找到鸟蛋8`);
           }
           else {
-            postAoe(`{"Name":"生命果实1 鸟8","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[8].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+            postAoe(`{"Name":"生命果实1 鸟8","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[8].ID},"Length":50,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
           if (sortedEgg[9] === undefined) {
             console.error(`生命果实1 未找到鸟蛋9`);
           }
           else {
-            postAoe(`{"Name":"生命果实1 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+            postAoe(`{"Name":"生命果实1 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":50,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
           if (sortedEgg[12] === undefined) {
             console.error(`生命果实1 未找到电牛12`);
@@ -98,19 +92,19 @@ Options.Triggers.push({
             console.error(`生命果实2 未找到鸟蛋7`);
           }
           else {
-            postAoe(`{"Name":"生命果实2 鸟7","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[7].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+            postAoe(`{"Name":"生命果实2 鸟7","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[7].ID},"Length":50,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
           if (sortedEgg[8] === undefined) {
             console.error(`生命果实2 未找到鸟蛋8`);
           }
           else {
-            postAoe(`{"Name":"生命果实2 鸟8","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[8].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+            postAoe(`{"Name":"生命果实2 鸟8","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[8].ID},"Length":50,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
           if (sortedEgg[9] === undefined) {
             console.error(`生命果实2 未找到鸟蛋9`);
           }
           else {
-            postAoe(`{"Name":"生命果实2 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
+            postAoe(`{"Name":"生命果实2 鸟9","AoeType":"Rect","CentreType":"ActorId","CentreValue":${sortedEgg[9].ID},"Length":50,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":15}`);
           }
         }
         
@@ -191,17 +185,14 @@ Options.Triggers.push({
         
       },
     },
-    {
-      id: 'P7S 生命果实 连线记录清除器',
+    {id: 'P7S 生命果实 连线记录清除器',
       type: 'StartsUsing',
       netRegex: { id: '7811', capture: false },
       run: async (data, matches) => {
         data.tetherSet = new Set();
       },
     },
-
-    {
-      id: 'P7S 生命果实 连线处理器',
+    {id: 'P7S 生命果实 连线处理器',
 
       // 0001 0039 Minotaur 牛头人 Tether
       // 0006 Io 电牛
@@ -215,18 +206,19 @@ Options.Triggers.push({
       netRegex: { id: ['0001', '0006', '0039', '0011'] },
       delaySeconds: 0.1,
       run: (data, matches) => {
-        if (data.tetherSet.has(matches.targetId)) {
+        let mark=matches.targetId+`-`+matches.sourceId;
+        if (data.tetherSet.has(mark)) {
           return;
         }
-        data.tetherSet.add(matches.targetId);
+        data.tetherSet.add(mark);
         if (data.eggParse === 4) {
           switch (matches.id) {
             case '0001':
             case '0039':
-              postAoe(`{"Name":"生命果实4 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
+              postAoe(`{"Name":"生命果实4 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":50,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
               break;
             case '0006':
-              postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
+              postAoe(`{"Name":"生命果实4 连线电牛","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
             default:
               break;
           }
@@ -234,7 +226,7 @@ Options.Triggers.push({
         if (data.eggParse === 5) {
           switch (matches.id) {
             case '0011':
-              postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":9}`);
+              postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             default:
               break;
@@ -255,10 +247,10 @@ Options.Triggers.push({
               postAoe(`{"Name":"生命果实10 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
               break;
             case '0006':
-              postAoe(`{"Name":"生命果实10 连线牛头人","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
+              postAoe(`{"Name":"生命果实10 连线电牛","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             case '0011':
-              postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
+              postAoe(`{"Name":"生命果实10 连线鸟","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             default:
               break;
@@ -267,8 +259,7 @@ Options.Triggers.push({
 
       },
     },
-    {
-      id: 'P7S 分摊死刑',
+    {id: 'P7S 分摊死刑',
       type: 'StartsUsing',
       netRegex: { id: '7836' },
       run: async (data, matches) => {
@@ -280,20 +271,17 @@ Options.Triggers.push({
         postAoe(`{"Name":"Circle Example","AoeType":"Circle","CentreType":"ActorId","CentreValue":${tid},"Radius":6,"Color":1073807359,"Delay":0,"During":8}`)
       },
     },
-    {
-      id: 'P7S 分散死刑',
+    {id: 'P7S 分散死刑',
       type: 'StartsUsing',
       netRegex: { id: '7835', capture: false },
       run: (data, matches) => {
         data.party.roleToPartyNames_['tank'].forEach(name => {
-          console.log("a");
           postAoe(`{"Name":"分摊死刑","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":6,"Color":1073807359,"Delay":0,"During":8}`);
         });
       },
 
     },
-    {
-      id: 'P7S 地火',
+    {id: 'P7S 地火',
       type: 'StartsUsing',
       netRegex: { id: '782F' },
       condition: (data) => data.eggParse === 0,
@@ -313,16 +301,14 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      id: 'P7S 奶妈分摊',
+    {id: 'P7S 奶妈分摊',
       type: 'StartsUsing',
       netRegex: { id: '783B' },
       run: async (data, matches) => {
         postAoe(`{"Name":"奶妈分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":0,"During":5.7}`);
       },
     },
-    {
-      id: 'P7S 前场双拳',
+    {id: 'P7S 前场双拳',
       type: 'StartsUsing',
       netRegex: { id: '7821', capture: false },
       run: async (data, matches) => {
@@ -330,8 +316,7 @@ Options.Triggers.push({
         postAoe(`{"Name":"前场双拳3","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":85.71,"Y":0,"Z":91.75},"Radius":19,"Color":1073807359,"Delay":0,"During":7}`);
       },
     },
-    {
-      id: 'P7S 后场单拳',
+    {id: 'P7S 后场单拳',
       type: 'StartsUsing',
       netRegex: { id: '7827', capture: false },
       run: async (data, matches) => {
@@ -339,13 +324,34 @@ Options.Triggers.push({
 
       },
     },
-    {
-      //右冲拳，左安全 宽25长50
+    {//右冲拳，左安全 宽25长50
       id: 'P7S 冲拳',
       type: 'StartsUsing',
       netRegex: { id: '7825', },
       run: async (data, matches) => {
         postAoe(`{"Name":"冲拳","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":40,"Width":25,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":5}`);
+      },
+    },
+    {//击退也许是16m
+      id: 'P7S 击退预测',
+      type: 'StartsUsing',
+      netRegex: { id: '7834', },
+      run: async (data, matches) => {
+        postAoe(`{"AoeType":5,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"Length":16,"Thickness":5.0,"Color":4278255544,"Delay":0.0,"During":10.0}`);
+      },
+    },
+    {//击退也许是16m
+      id: 'P7S 脑死法击退点',
+      type: 'StartsUsing',
+      netRegex: { id: '7834', },
+      run: async (data, matches) => {
+        let dis=2.8;
+        let pos1x=Math.sin(Math.PI/3*2)*dis+100;
+        let pos1y=Math.cos(Math.PI/3*2)*dis+100;
+        let pos2x=Math.sin(-Math.PI/3*2)*dis+100;
+        let pos2y=Math.cos(-Math.PI/3*2)*dis+100;
+        postAoe(`{"Name":"击退点1","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${pos1x},"Y":0,"Z":${pos1y}},"Radius":0.25,"Color":2717974272,"Delay":0,"During":6}`);
+        postAoe(`{"Name":"击退点2","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${pos2x},"Y":0,"Z":${pos2y}},"Radius":0.25,"Color":2717974272,"Delay":0,"During":6}`);
       },
     },
     {id: 'P7S 魔印创造 处理器',
@@ -415,8 +421,7 @@ Options.Triggers.push({
         // }
       },
     },
-    {
-      id: 'P7S 魔印创造·狱 地面AOE',
+    {id: 'P7S 魔印创造·狱 地面AOE',
       type: 'StartsUsing',
       netRegex: { id: ['7820', '781F'] },
       run: async (data, matches) => {
@@ -432,8 +437,7 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      //鸟连线
+    {//鸟连线
       id: 'P7S 鸟连线 防击退',
       type: 'Tether',
       netRegex: { id: '0011', source: '未成熟的铁爪怪鸟' },
@@ -447,9 +451,7 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      //击退
-      id: 'P7S 半神飙风 防击退',
+    {id: 'P7S 半神飙风 防击退',
       type: 'StartsUsing',
       netRegex: { id: '7A0B', capture: false },
       delaySeconds: 1,

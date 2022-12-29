@@ -59,8 +59,7 @@ Options.Triggers.push({
         getHeadmarkerId(data, matches);
       },
     },
-    {
-      id: '以太计数器',
+    {id: '以太计数器',
       type: 'StartsUsing',
       netRegex: { id: '786[68]', capture: false },
       preRun:(data)=>
@@ -68,8 +67,7 @@ Options.Triggers.push({
         data.以太阶段++;
       },
     },
-    {
-      id: 'P6S 多元以太 地板形状收集器',
+    {id: 'P6S 多元以太 地板形状收集器',
       type: 'MapEffect',
       netRegex: { flags: [crossTileFlags, diagonalTileFlags] },
       run: (data, matches) => {
@@ -84,8 +82,7 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      id: 'P6S 多元以太 连线收集器',
+    {id: 'P6S 多元以太 连线收集器',
       type: 'Tether',
       netRegex: { id: '00CF' },
       run: async (data, matches) => {
@@ -107,9 +104,7 @@ Options.Triggers.push({
         }
       },
     },
-
-    {
-      id: 'P6S 多元以太 危险区计算作图',
+    {id: 'P6S 多元以太 危险区计算作图',
       type: 'Ability',
       netRegex: { id: '786[68]', capture: false },
       delaySeconds: 2,
@@ -150,8 +145,7 @@ Options.Triggers.push({
         data.不安全地板 = {};
       },
     },
-    {
-      id: '致病孢流 麻将范围',
+    {id: '致病孢流 麻将范围',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data, matches) => {
@@ -163,8 +157,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":90,"Color":${col},"Delay":${delay},"During":4}`);
       },
     },
-    {
-      id: '致病孢流 麻将引导提示',
+    {id: '致病孢流 麻将引导提示',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data, matches) => {
@@ -183,24 +176,21 @@ Options.Triggers.push({
         }
       },
     },
-    {
-      id: '分散死刑范围',
+    {id: '分散死刑范围',
       type: 'StartsUsing',
       netRegex: { id: '788[89]' },
       run: async (data, matches) => {
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":5,"Color":1291911167,"Delay":0.0,"During":7}`);
       },
     },
-    {
-      id: '分摊死刑范围',
+    {id: '分摊死刑范围',
       type: 'StartsUsing',
       netRegex: { id: '788A' },
       run: async (data, matches) => {
         postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":60.0,"Color":1291911167,"Delay":0.0,"During":7}`);
       },
     },
-    {
-      id: '界外劈砍 万变水波',
+    {id: '界外劈砍 万变水波',
       type: 'StartsUsing',
       netRegex: { id: '7869' },
       run: async (data, matches) => {
@@ -212,16 +202,14 @@ Options.Triggers.push({
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":330.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
       },
     },
-    {
-      id: '黑暗神圣 奶妈分摊',
+    {id: '黑暗神圣 奶妈分摊',
       type: 'StartsUsing',
       netRegex: { id: '7892' },
       run: async (data, matches) => {
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":6,"Color":1291910912,"Delay":0.0,"During":5.7}`);
       },
     },
-    {
-      id: '寄生之舞 前后刀->左右刀',
+    {id: '寄生之舞 前后刀->左右刀',
       type: 'StartsUsing',
       netRegex: { id: '7881' },
       run: async (data, matches) => {
@@ -231,8 +219,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":-90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
       },
     },
-    {
-      id: '寄生之舞 左右刀->前后刀',  
+    {id: '寄生之舞 左右刀->前后刀',  
       type: 'StartsUsing',
       netRegex: { id: '7883' },
       run: async (data, matches) => {
@@ -242,8 +229,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
       },
     },
-    {
-      id: '暗天顶 诱导',
+    {id: '暗天顶 诱导',
       type: 'Ability',
       netRegex: { id: '788B' , capture: false },
       run: async (data, matches) => {
@@ -262,8 +248,7 @@ Options.Triggers.push({
         });
       },
     },
-    {
-      id: '恶病质1 甲壳软体耐性降低 收集器',
+    {id: '恶病质1 甲壳软体耐性降低 收集器',
       // CF7 软体耐性降低 (蛇)
       // CF8 甲壳耐性降低 (翅膀)
       type: 'GainsEffect',
@@ -271,8 +256,7 @@ Options.Triggers.push({
       condition: Conditions.targetIsYou(),
       run: (data, matches) => data.ownDebuff = matches.effectId,
     },
-    {
-      id: '恶病质1 魔活细胞 处理器',
+    {id: '恶病质1 魔活细胞 处理器',
       // Using Aetheronecrosis (CF9)
       // These come out as 20s, 16s, 12s, or 8s
       type: 'GainsEffect',
@@ -282,8 +266,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":8,"Color":1291845887,"Delay":${duration},"During":6}`);
       },
     },
-    {
-      id: '恶病质1 左右半场 处理器',
+    {id: '恶病质1 左右半场 处理器',
       // CF7 软体耐性降低 (蛇)
       // CF8 甲壳耐性降低 (翅膀)
       type: 'GainsEffect',
@@ -295,8 +278,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":3,"PostionType":3,"Postion":{"X":${dir},"Y":0.0,"Z":80},"TrackMode":1,"Rotation":0.0,"Length":40,"Width":20,"Color":1291911167,"Delay":0.0,"During":30}`);
       },
     },
-    {
-      id: '寄生翅翼 处理器',  
+    {id: '寄生翅翼 处理器',  
       type: 'StartsUsing',
       netRegex: { id: '787C' },
       run: async (data, matches) => {
@@ -304,8 +286,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":3,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":${rot},"Length":20,"Width":40,"Color":1291911167,"Delay":0.0,"During":5.7}`);
       },
     },
-    {
-      id: '多元以太6 左右半场',  
+    {id: '多元以太6 左右半场',  
       type: 'Ability',
       netRegex: { id: '786[68]', capture: false },
       condition: (data) => data.以太阶段 === 6,
@@ -314,8 +295,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":3,"PostionType":3,"Postion":{"X":${dir},"Y":0.0,"Z":80},"TrackMode":1,"Rotation":0.0,"Length":40,"Width":20,"Color":1291911167,"Delay":0.0,"During":7.6}`);
       },
     },
-    {
-      id: 'P6S 寄生处理器',
+    {id: 'P6S 寄生处理器',
       type: 'GainsEffect',
       // CF3 甲壳寄生 (翅膀 - 身后扇形)
       // D48 软体寄生 (蛇 - 正面扇形)
