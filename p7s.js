@@ -148,7 +148,7 @@ Options.Triggers.push({
               console.error($`生命果实8 未找到牛头${i}`);
             }
             else {
-              postAoe(`{"Name":"Rect Example","AoeType":"Sector","CentreType":"ActorId","CentreValue":${sortedEgg[i].ID},"TrackType":"Nearest","TrackValue":1,"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":19,"Delay":3}`);
+              postAoe(`{"Name":"Rect Example","AoeType":"Sector","CentreType":"ActorId","CentreValue":${sortedEgg[i].ID},"TrackType":"Nearest","TrackValue":1,"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":19,"During":3}`);
             }
           }
           if (sortedEgg[8] === undefined) {
@@ -204,18 +204,82 @@ Options.Triggers.push({
       // TODO: Get locations with OverlayPlugin via X, Y and bird headings?
       type: 'Tether',
       netRegex: { id: ['0001', '0006', '0039', '0011'] },
-      delaySeconds: 0.1,
-      run: (data, matches) => {
-        let mark=matches.targetId+`-`+matches.sourceId;
+      promise: (data, matches) => {
+
+        let mark = matches.targetId + `-` + matches.sourceId;
+        let mark2 = matches.sourceId + `-` + matches.targetId;
         if (data.tetherSet.has(mark)) {
-          return;
+          return false;
+        }
+        if (data.tetherSet.has(mark2)) {
+          return false;
         }
         data.tetherSet.add(mark);
+        data.tetherSet.add(mark2);
+
+        return true;
+
+      },
+      alertText: (data, matches) =>{
+        if (matches.target===data.me) {
+          if (data.eggParse === 4) {
+            switch (matches.id) {
+              case '0001':
+              case '0039':
+                return '连线牛头人 拉远';
+              case '0006':
+                return '连线电牛 靠近引导';
+              default:
+                break;
+            }
+          }
+          if (data.eggParse === 5) {
+            switch (matches.id) {
+              case '0011':
+                return '引导鸟';
+              default:
+                break;
+            }
+          }
+          if (data.eggParse === 5) {
+            switch (matches.id) {
+              case '0001':
+              case '0039':
+                return '连线牛头人 拉远';
+              default:
+                break;
+            }
+          }
+          if (data.eggParse === 9){
+            if(matches.id==='0006')
+            {
+              return '连线电牛 站位引导';
+            }
+  
+          }
+          if (data.eggParse === 10){
+            switch (matches.id) {
+              case '0001':
+              case '0039':
+                return '连线牛头人 拉远'
+              case '0006':
+                return '连线电牛 靠近引导'
+              case '0011':
+                return '连线鸟 靠近引导到场外'
+              default:
+                break;
+            }
+          }
+        }
+      },
+
+      run: (data, matches) => {
+        
         if (data.eggParse === 4) {
           switch (matches.id) {
             case '0001':
             case '0039':
-              postAoe(`{"Name":"生命果实4 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":50,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
+              postAoe(`{"Name":"生命果实4 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":50,"Angle":30,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             case '0006':
               postAoe(`{"Name":"生命果实4 连线电牛","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
@@ -226,7 +290,7 @@ Options.Triggers.push({
         if (data.eggParse === 5) {
           switch (matches.id) {
             case '0011':
-              postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
+              postAoe(`{"Name":"生命果实5 连线鸟","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             default:
               break;
@@ -244,7 +308,7 @@ Options.Triggers.push({
           switch (matches.id) {
             case '0001':
             case '0039':
-              postAoe(`{"Name":"生命果实10 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":40,"Angle":90,"Rotation":0.0,"Color":1073807359,"Delay":5,"Delay":4}`);
+              postAoe(`{"Name":"生命果实10 连线牛头人","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Radius":40,"Angle":30,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
               break;
             case '0006':
               postAoe(`{"Name":"生命果实10 连线电牛","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":5,"During":4}`);
@@ -340,8 +404,7 @@ Options.Triggers.push({
         postAoe(`{"AoeType":5,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"Length":16,"Thickness":5.0,"Color":4278255544,"Delay":0.0,"During":10.0}`);
       },
     },
-    {//击退也许是16m
-      id: 'P7S 脑死法击退点',
+    {id: 'P7S 脑死法击退点',
       type: 'StartsUsing',
       netRegex: { id: '7834', },
       run: async (data, matches) => {
@@ -352,73 +415,6 @@ Options.Triggers.push({
         let pos2y=Math.cos(-Math.PI/3*2)*dis+100;
         postAoe(`{"Name":"击退点1","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${pos1x},"Y":0,"Z":${pos1y}},"Radius":0.25,"Color":2717974272,"Delay":0,"During":6}`);
         postAoe(`{"Name":"击退点2","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${pos2x},"Y":0,"Z":${pos2y}},"Radius":0.25,"Color":2717974272,"Delay":0,"During":6}`);
-      },
-    },
-    {id: 'P7S 魔印创造 处理器',
-      type: 'GainsEffect',
-      // CEC/D45 = Inviolate Winds
-      // CED/D56 = Holy Bonds
-      netRegex: { effectId: ['CEC', 'CED', 'D45', 'D56'] },
-      run: async (data, matches) => {
-        // switch (matches.effectId) {
-        //   case 'CEC':
-        //     postAoe(`{"Name":"魔印创造1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":0,"During":9}`);
-        //     break;
-        //   case 'CED':
-        //     postAoe(`{"Name":"魔印创造1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":0,"During":9}`);
-        //     break;
-        //   case 'D45':
-        //     postAoe(`{"Name":"魔印创造2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":15,"During":5}`);
-        //     break;
-        //   case 'D56':
-        //     postAoe(`{"Name":"魔印创造2圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":15,"During":5}`);
-        //     break;
-        //   default:
-        //     break;
-        // }
-
-      },
-    },
-    {id: 'P7S 魔印创造·狱 处理器',
-      type: 'GainsEffect',
-      // CEE = Purgatory Winds I
-      // D3F = Purgatory Winds II
-      // D40 = Purgatory Winds III
-      // D41 = Purgatory Winds IV
-      // CEF = Holy Purgation I
-      // D42 = Holy Purgation II
-      // D43 = Holy Purgation III
-      // D44 = Holy Purgation IV
-      netRegex: { effectId: ['CE[EF]', 'D3F', 'D4[01234]'] },
-      run: (data, matches) => {
-        // switch (matches.effectId) {
-        //   case 'CEE':
-        //     postAoe(`{"Name":"魔印创造·狱1风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":5,"During":5}`);
-        //     break;
-        //   case 'D3F':
-        //     postAoe(`{"Name":"魔印创造·狱2风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":20,"During":5}`);
-        //     break;
-        //   case 'D40':
-        //     postAoe(`{"Name":"魔印创造·狱3风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":35,"During":5}`);
-        //     break;
-        //   case 'D41':
-        //     postAoe(`{"Name":"魔印创造·狱4风","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":7,"Color":1073807359,"Delay":50,"During":5}`);
-        //     break;
-        //   case 'CEF':
-        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":5,"During":5}`);
-        //     break;
-        //   case 'D42':
-        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":20,"During":5}`);
-        //     break;
-        //   case 'D43':
-        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":35,"During":5}`);
-        //     break;
-        //   case 'D44':
-        //     postAoe(`{"Name":"魔印创造·狱1圣","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":1073807104,"Delay":50,"During":5}`);
-        //     break;
-        //   default:
-        //     break;
-        // }
       },
     },
     {id: 'P7S 魔印创造·狱 地面AOE',
