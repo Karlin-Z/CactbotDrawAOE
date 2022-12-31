@@ -279,7 +279,7 @@ Options.Triggers.push({
       run: (data, matches) => {
         if(!蛇毒范围) return;
         let d=parseFloat(matches.duration)-3.5;
-        postAoe(`{"Name":"蛇毒范围 ${matches.target}","AoeType":"Circle","CentreType":"ActorId","CentreValue":0xE0000000,"Radius":5,"Color":503382015,"Delay":${d},"During":3.5}`)
+        postAoe(`{"Name":"蛇毒范围 ${matches.target}","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":5,"Color":503382015,"Delay":${d},"During":3.5}`)
       },
     },
     {id: 'P8S 人形态2诱导直条',
@@ -367,8 +367,9 @@ Options.Triggers.push({
       // Blazing Footfalls takes 14.5s to complete +4s to resolve Torch Flames
       type: 'StartsUsing',
       netRegex: { id: ['793C', '793D']},
-      promise:async (data, matches) =>{
+      alert:async (data, matches) => {
         data.足球计数++;
+        console.log(data.足球计数);
         let result = await callOverlayHandler({
           call: 'getCombatants',
           ids: [parseInt(matches.sourceId, 16)],
@@ -380,9 +381,6 @@ Options.Triggers.push({
 
         data.足球击退大圈.push(matches.id);
         data.足球击退大圈位置.push(dir);
-        return;
-      },
-      alert:(data, matches) => {
         if (data.足球计数 === 1) {
           //击退到东西
           if (data.足球击退大圈[0] === '739C' && data.足球击退大圈位置[0] === 1) {
