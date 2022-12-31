@@ -1,3 +1,18 @@
+//在此进行设置
+const 地板作图=true;
+const 自己的麻将作图=true;
+const 死刑作图=true;
+const 万变水波作图=true;
+const 奶妈分摊作图=true;
+const 前后左右刀作图=true;
+const 暗天顶作图=true;
+const 魔活细胞作图=true;
+const 左右半场作图=true;
+const 毒喷射作图=true;
+
+
+
+
 
 // Due to changes introduced in patch 5.2, overhead markers now have a random offset
 // added to their ID. This offset currently appears to be set per instance, so
@@ -109,7 +124,7 @@ Options.Triggers.push({
       netRegex: { id: '786[68]', capture: false },
       delaySeconds: 2,
       run: (data) => {
-
+        if (!地板作图) return;
         //连线反转
         for (const tpos of data.连线pos) {
           if (data.地板形状[tpos] !== undefined) {
@@ -152,6 +167,7 @@ Options.Triggers.push({
         return ((/00(?:4F|5[0-6])/).test(getHeadmarkerId(data, matches)) && data.me === matches.target);
       },
       run: (data, matches) => {
+        if (!自己的麻将作图) return;
         let col = data.me === matches.target ? 1291845887 : 1291911167;
         let delay = (parseInt(getHeadmarkerId(data, matches),16)-parseInt('004F',16))*2+4.6;
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":90,"Color":${col},"Delay":${delay},"During":4}`);
@@ -180,6 +196,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '788[89]' },
       run: async (data, matches) => {
+        if (!死刑作图) return;
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":5,"Color":1291911167,"Delay":0.0,"During":7}`);
       },
     },
@@ -187,6 +204,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '788A' },
       run: async (data, matches) => {
+        if (!死刑作图) return;
         postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":2,"TrackId":0x${matches.targetId},"OuterRadius":30,"SectorAngle":60.0,"Color":1291911167,"Delay":0.0,"During":7}`);
       },
     },
@@ -194,6 +212,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7869' },
       run: async (data, matches) => {
+        if (!万变水波作图) return;
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":30.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":150.0,"OuterRadius":25,"SectorAngle":30.0,"Color":1291911167,"Delay":3.7,"During":2.8}`);
@@ -206,6 +225,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7892' },
       run: async (data, matches) => {
+        if (!奶妈分摊作图) return;
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":6,"Color":1291910912,"Delay":0.0,"During":5.7}`);
       },
     },
@@ -213,6 +233,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7881' },
       run: async (data, matches) => {
+        if (!前后左右刀作图) return;
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":180.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
@@ -223,6 +244,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '7883' },
       run: async (data, matches) => {
+        if (!前后左右刀作图) return;
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":90.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":-80.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":0.0,"During":4.2}`);
         postAoe(`{"AoeType":4,"PostionType":3,"Postion":{"X":100,"Y":0.0,"Z":100},"TrackMode":1,"Rotation":0.0,"OuterRadius":30,"SectorAngle":90,"Color":1291911167,"Delay":4.2,"During":3}`);
@@ -233,6 +255,7 @@ Options.Triggers.push({
       type: 'Ability',
       netRegex: { id: '788B' , capture: false },
       run: async (data, matches) => {
+        if (!暗天顶作图) return;
         let ids=[];
         data.party.partyIds_.forEach( pids => {
           ids.push(parseInt(pids, 16))
@@ -262,6 +285,7 @@ Options.Triggers.push({
       type: 'GainsEffect',
       netRegex: { effectId: 'CF9' },
       run: async (data, matches) => {
+        if (!魔活细胞作图) return;
         const duration = parseFloat(matches.duration)-6;
         postAoe(`{"AoeType":1,"PostionType":1,"ActorId":0x${matches.targetId},"OuterRadius":8,"Color":1291845887,"Delay":${duration},"During":6}`);
       },
@@ -274,6 +298,7 @@ Options.Triggers.push({
       condition: Conditions.targetIsYou(),
       delaySeconds: 0.1,
       run: async (data, matches) => {
+        if (!左右半场作图) return;
         const dir = data.ownDebuff === 'CF7' ? 110 : 90;
         postAoe(`{"AoeType":3,"PostionType":3,"Postion":{"X":${dir},"Y":0.0,"Z":80},"TrackMode":1,"Rotation":0.0,"Length":40,"Width":20,"Color":1291911167,"Delay":0.0,"During":30}`);
       },
@@ -282,6 +307,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '787C' },
       run: async (data, matches) => {
+        if (!左右半场作图) return;
         const rot = data.ownDebuff === 'CF7' ? 90 : -90;
         postAoe(`{"AoeType":3,"PostionType":1,"ActorId":0x${matches.sourceId},"TrackMode":1,"Rotation":${rot},"Length":20,"Width":40,"Color":1291911167,"Delay":0.0,"During":5.7}`);
       },
@@ -291,11 +317,12 @@ Options.Triggers.push({
       netRegex: { id: '786[68]', capture: false },
       condition: (data) => data.以太阶段 === 6,
       run: async (data, matches) => {
+        if (!左右半场作图) return;
         const dir = data.ownDebuff === 'CF7' ? 110 : 90;
         postAoe(`{"AoeType":3,"PostionType":3,"Postion":{"X":${dir},"Y":0.0,"Z":80},"TrackMode":1,"Rotation":0.0,"Length":40,"Width":20,"Color":1291911167,"Delay":0.0,"During":7.6}`);
       },
     },
-    {id: 'P6S 寄生处理器',
+    {id: 'P6S 寄生 处理器',
       type: 'GainsEffect',
       // CF3 甲壳寄生 (翅膀 - 身后扇形)
       // D48 软体寄生 (蛇 - 正面扇形)
@@ -311,6 +338,7 @@ Options.Triggers.push({
         }
       },
       run: async (data, matches) => {
+        if (!毒喷射作图) return;
         const rot = matches.effectId === 'D48' ? 0 : 180;
         const delay=parseFloat(matches.duration) - 4;
         postAoe(`{"AoeType":4,"PostionType":1,"ActorId":0x${matches.targetId},"TrackMode":1,"Rotation":${rot},"OuterRadius":30,"SectorAngle":30,"Color":1291911167,"Delay":${delay},"During":4}`);
