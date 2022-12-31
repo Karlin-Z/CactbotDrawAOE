@@ -69,7 +69,7 @@ Options.Triggers.push({
       足球击退大圈: [],
       足球击退大圈位置: [],
       火圈单位:[],
-      存储核爆:0,
+      存储核爆:'',
     };
   },
   triggers: [
@@ -159,17 +159,18 @@ Options.Triggers.push({
         }
       },
     },
+
     {id: 'P8S 门神 延时核爆范围',
     type: 'StartsUsing',
     netRegex: { id: '791[01]' },
     run: async (data, matches) => {
       if (!延时核爆范围) return;
-      if (data.存储核爆===4) {
+      if (data.存储核爆==='7915') {
         data.party.roleToPartyNames_['dps'].forEach(name => {
           postAoe(`{"Name":"四分核爆之念","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":3,"Color":503381760,"Delay":0,"During":8}`);
         });
       }
-      if (data.存储核爆===8) {
+      if (data.存储核爆==='7914') {
         data.party.partyIds_.forEach( pid => {
           postAoe(`{"Name":"八分核爆之念","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${pid},"Radius":6,"Color":503382015,"Delay":0,"During":8}`);
         }); 
@@ -204,12 +205,7 @@ Options.Triggers.push({
       // 7916 during Blazing Footfalls
       netRegex: { id: ['7915','7914']},
       run: (data, matches) => {
-        if (matches.id==='7914') {
-          data.存储核爆===8;
-        } else {
-          data.存储核爆===4;
-        }
-        
+        data.存储核爆=matches.id;
       },
       
     },
@@ -266,7 +262,6 @@ Options.Triggers.push({
       netRegex: { effectId: ['D17'] },
       condition: (data, matches) => {
         return (!石眼范围仅显示自己)||matches.target===data.me;
-        
       },
       run: (data, matches) => {
         if(!石眼范围) return;
@@ -292,7 +287,7 @@ Options.Triggers.push({
       netRegex: { id: '72CE'},
       run: (data, matches) => {
         if(!人形态2诱导范围) return;
-        postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"Nearest","TrackValue":4,"Length":60,"Width":5,"Rotation":0.0,"Color":671154175,"Delay":0,"During":4}`)
+        postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":100},"TrackType":"Nearest","TrackValue":4,"Length":60,"Width":5,"Rotation":0.0,"Color":671154175,"Delay":0,"During":4}`)
       },
     },
     {id: 'P8S 火蛇范围 第一次',
