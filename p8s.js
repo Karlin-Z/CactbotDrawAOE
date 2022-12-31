@@ -285,6 +285,7 @@ Options.Triggers.push({
     {id: 'P8S 人形态2诱导直条',
       type: 'Ability',
       netRegex: { id: '72CE'},
+      suppressSeconds:1,
       run: (data, matches) => {
         if(!人形态2诱导范围) return;
         postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":100},"TrackType":"Nearest","TrackValue":4,"Length":60,"Width":5,"Rotation":0.0,"Color":671154175,"Delay":0,"During":4}`)
