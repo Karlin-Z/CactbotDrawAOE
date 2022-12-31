@@ -495,7 +495,7 @@ Options.Triggers.push({
             postAoe(`{"Name":"兽形态2 开场北大圈","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Radius":30,"Color":503382015,"Delay":0,"During":5.5}`);
           } else {
             //北击退
-            postAoe(`{"Name":"兽形态2 开场北击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":22,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
+            postAoe(`{"Name":"兽形态2 开场北击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":30,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
           }
         }
         // Boss will be facing South
@@ -506,7 +506,7 @@ Options.Triggers.push({
             postAoe(`{"Name":"兽形态2 开场南大圈","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Radius":30,"Color":503382015,"Delay":0,"During":5.5}`);
           }else {
             //南击退
-            postAoe(`{"Name":"兽形态2 开场南击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Length":22,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
+            postAoe(`{"Name":"兽形态2 开场南击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Length":30,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
           }
         }
           
