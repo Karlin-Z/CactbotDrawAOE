@@ -5,6 +5,7 @@ const 地板火范围 = true;
 const 炎蛇群翔范围 = true;
 const 延时核爆范围=true;
 const 普通核爆范围=true;
+const 足球核爆范围=true;
 
 const 兽变身自动防击退 = true;
 const 蛇变身钢铁作图 = true;
@@ -62,9 +63,10 @@ const headingTo8Dir = (heading) => {
 const arcaneChannelFlags = '00020001'; // mapEffect flags for tower tile effect
 Options.Triggers.push({
   zoneId: ZoneId.AbyssosTheEighthCircleSavage,
+  // zoneId: 979,
   initData: () => {
     return {
-      足球计数: 0,
+      足球计数:0,
       足球分摊: '',
       足球击退大圈: [],
       足球击退大圈位置: [],
@@ -218,6 +220,22 @@ Options.Triggers.push({
         if (!兽变身自动防击退) return;
         sendCommand('/ac 亲疏自行');
         sendCommand('/ac 沉稳咏唱');
+        setTimeout(() => {
+          sendCommand('/ac 亲疏自行');
+          sendCommand('/ac 沉稳咏唱');
+        }, 200);
+        setTimeout(() => {
+          sendCommand('/ac 亲疏自行');
+          sendCommand('/ac 沉稳咏唱');
+        }, 400);
+        setTimeout(() => {
+          sendCommand('/ac 亲疏自行');
+          sendCommand('/ac 沉稳咏唱');
+        }, 600);
+        setTimeout(() => {
+          sendCommand('/ac 亲疏自行');
+          sendCommand('/ac 沉稳咏唱');
+        }, 800);
       },
     },
     {id: 'P8S 门神 蛇变身钢铁',
@@ -358,6 +376,17 @@ Options.Triggers.push({
       netRegex: { id: ['7916', '7917'] },
       run: (data, matches) => {
         data.足球分摊=matches.id;
+        if (!足球核爆范围) return;
+        if (matches.id==='7916') {
+          data.party.roleToPartyNames_['dps'].forEach(name => {
+            postAoe(`{"Name":"四分核爆之念(足球)","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":3,"Color":503381760,"Delay":13,"During":4}`);
+          });
+        }else
+        {
+          data.party.roleToPartyNames_['healer'].forEach(name => {
+            postAoe(`{"Name":"二分核爆之念(足球)","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":6,"Color":503381760,"Delay":13,"During":4}`);
+          });
+        }
       },
     },
     {id: 'P8S 踢足球 收集器',
@@ -368,9 +397,9 @@ Options.Triggers.push({
       // Blazing Footfalls takes 14.5s to complete +4s to resolve Torch Flames
       type: 'StartsUsing',
       netRegex: { id: ['793C', '793D']},
-      alert:async (data, matches) => {
+      // netRegex: { id: '85'},
+      promise: async (data, matches) =>{
         data.足球计数++;
-        console.log(data.足球计数);
         let result = await callOverlayHandler({
           call: 'getCombatants',
           ids: [parseInt(matches.sourceId, 16)],
@@ -382,82 +411,207 @@ Options.Triggers.push({
 
         data.足球击退大圈.push(matches.id);
         data.足球击退大圈位置.push(dir);
+      },
+
+      alertText:(data, matches) => {
         if (data.足球计数 === 1) {
           //击退到东西
-          if (data.足球击退大圈[0] === '739C' && data.足球击退大圈位置[0] === 1) {
+          if (data.足球击退大圈[0] === '793C' && data.足球击退大圈位置[0] === 1) {
             return '先向东击退';
           }
-          if (data.足球击退大圈[0] === '739C' && data.足球击退大圈位置[0] === 3) {
+          if (data.足球击退大圈[0] === '793C' && data.足球击退大圈位置[0] === 3) {
             return '先向西击退';
           }
-          if (data.足球击退大圈[0] === '739D' && data.足球击退大圈位置[0] === 1) {
+          if (data.足球击退大圈[0] === '793D' && data.足球击退大圈位置[0] === 1) {
             return '先向西击退';
           }
-          if (data.足球击退大圈[0] === '739D' && data.足球击退大圈位置[0] === 3) {
+          if (data.足球击退大圈[0] === '793D' && data.足球击退大圈位置[0] === 3) {
             return '先向东击退';
           }
         }
         if (data.足球计数 === 2) {
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 0) {
+          if (data.足球击退大圈[1] === '793C' && data.足球击退大圈位置[1] === 0) {
             return '再去A点';
           }
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 2) {
+          if (data.足球击退大圈[1] === '793C' && data.足球击退大圈位置[1] === 2) {
             return '再去C点';
           }
-          if (data.足球击退大圈[1] === '739D' && data.足球击退大圈位置[1] === 0) {
+          if (data.足球击退大圈[1] === '793D' && data.足球击退大圈位置[1] === 0) {
             return '再去C点';
           }
-          if (data.足球击退大圈[1] === '739D' && data.足球击退大圈位置[1] === 2) {
+          if (data.足球击退大圈[1] === '793D' && data.足球击退大圈位置[1] === 2) {
             return '再去A点';
           }
         }
       },
       run: (data, matches) => {
+        
         if (data.足球计数 === 1 && 足球东西击退辅助)
         {
-          if (data.足球击退大圈[0] === '739C' && data.足球击退大圈位置[0] === 1) {
-            consol.log(`{"Name":"东西击退 中","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":40,"Width":14,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);          
-            consol.log(`{"Name":"东西击退 左","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":86.5,"Y":80,"Z":0.0},"Length":40,"Width":13,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);            
+          
+          //1击退
+          if (data.足球击退大圈[0] === '793C') {
+            //东击退
+            if (data.足球击退大圈位置[0] === 1) {
+              //2222分摊
+              if (data.足球分摊==='7916') {
+                if (位置==='MT'||位置==='D1') {
+                  postAoe(`{"Name":"1东击退 2人分摊 MT组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='ST'||位置==='D2') {
+                  postAoe(`{"Name":"1东击退 2人分摊 ST组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='H1'||位置==='D3') {
+                  postAoe(`{"Name":"1东击退 2人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":100.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1东击退 2人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+              }
+              //44分摊
+              if (data.足球分摊==='7917') {
+                if (位置==='MT'||位置==='D1'||位置==='H1'||位置==='D2') {
+                  postAoe(`{"Name":"1东击退 4人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='ST'||位置==='D3'||位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1东击退 4人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":94.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+              }
+            }
+
+            //西击退
+            if (data.足球击退大圈位置[0] === 3) {
+              //2222分摊
+              if (data.足球分摊==='7916') {
+                if (位置==='MT'||位置==='D1') {
+                  postAoe(`{"Name":"1西击退 2人分摊 MT组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='ST'||位置==='D2') {
+                  postAoe(`{"Name":"1西击退 2人分摊 ST组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='H1'||位置==='D3') {
+                  postAoe(`{"Name":"1西击退 2人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":100.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1西击退 2人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+              }
+              //44分摊
+              if (data.足球分摊==='7917') {
+                if (位置==='MT'||位置==='D1'||位置==='H1'||位置==='D2') {
+                  postAoe(`{"Name":"1西击退 4人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+                if (位置==='ST'||位置==='D3'||位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1西击退 4人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":94.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":9.5}`);
+                }
+              }
+            }
           }
-          if (data.足球击退大圈[0] === '739C' && data.足球击退大圈位置[0] === 3) {
-            consol.log(`{"Name":"东西击退 中","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":40,"Width":14,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);          
-            consol.log(`{"Name":"东西击退 右","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":113.5,"Y":80,"Z":0.0},"Length":40,"Width":13,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);          
+          //1大圈
+          if (data.足球击退大圈[0] === '793D') {
+            //东大圈
+            if (data.足球击退大圈位置[0] === 1) {
+              //2222分摊
+              if (data.足球分摊==='7916') {
+                if (位置==='MT'||位置==='D1') {
+                  postAoe(`{"Name":"1东大圈 2人分摊 MT组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='ST'||位置==='D2') {
+                  postAoe(`{"Name":"1东大圈 2人分摊 ST组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='H1'||位置==='D3') {
+                  postAoe(`{"Name":"1东大圈 2人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":100.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1东大圈 2人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+              }
+              //44分摊
+              if (data.足球分摊==='7917') {
+                if (位置==='MT'||位置==='D1'||位置==='H1'||位置==='D2') {
+                  postAoe(`{"Name":"1东大圈 4人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='ST'||位置==='D3'||位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1东大圈 4人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":0,"Z":94.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+              }
+            }
+
+            //西大圈
+            if (data.足球击退大圈位置[0] === 3) {
+              //2222分摊
+              if (data.足球分摊==='7916') {
+                if (位置==='MT'||位置==='D1') {
+                  postAoe(`{"Name":"1西大圈 2人分摊 MT组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='ST'||位置==='D2') {
+                  postAoe(`{"Name":"1西大圈 2人分摊 ST组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='H1'||位置==='D3') {
+                  postAoe(`{"Name":"1西大圈 2人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":100.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1西大圈 2人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+              }
+              //44分摊
+              if (data.足球分摊==='7917') {
+                if (位置==='MT'||位置==='D1'||位置==='H1'||位置==='D2') {
+                  postAoe(`{"Name":"1西大圈 4人分摊 H1组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":85.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+                if (位置==='ST'||位置==='D3'||位置==='H2'||位置==='D4') {
+                  postAoe(`{"Name":"1西大圈 4人分摊 H2组","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":0,"Z":94.0},"Thikness":5,"Color":4278255360,"Delay":0,"During":5}`);
+                }
+              }
+            }
           }
-          if (data.足球击退大圈[0] === '739D' && data.足球击退大圈位置[0] === 1) {
-            consol.log(`{"Name":"东西击退 中","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":40,"Width":14,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);          
-            consol.log(`{"Name":"东西击退 右","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":113.5,"Y":80,"Z":0.0},"Length":40,"Width":13,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);                    
-          }
-          if (data.足球击退大圈[0] === '739D' && data.足球击退大圈位置[0] === 3) {
-            consol.log(`{"Name":"东西击退 中","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":40,"Width":14,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);          
-            consol.log(`{"Name":"东西击退 左","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":86.5,"Y":80,"Z":0.0},"Length":40,"Width":13,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":8}`);            
-          }
+          
         }
         if (data.足球计数 === 2 && 足球南北击退辅助) {
-          //接击退
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 0) {
-            consol.log(`{"Name":"南北击退 北","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":91},"Thikness":5,"Color":4278255360,"Delay":8,"During":5.7}`);
-          }
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 2) {
-            consol.log(`{"Name":"南北击退 南","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":109},"Thikness":5,"Color":4278255360,"Delay":8,"During":5.7}`);
-          }
+          //1大圈2击退
+          if (data.足球击退大圈[1] === '793C') {
+            //大圈范围
+            if (data.足球击退大圈位置[0] === 1) {
+              postAoe(`{"Name":"1东大圈范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":120,"Y":0,"Z":100.0},"Radius":30,"Color":671154175,"Delay":6,"During":4}`);
+            }
+            if (data.足球击退大圈位置[0] === 3) {
+              postAoe(`{"Name":"1西大圈范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":80,"Y":0,"Z":100.0},"Radius":30,"Color":671154175,"Delay":6,"During":4}`);            
+            }
 
-          //接大圈
-          if (data.足球击退大圈[1] === '739D' && data.足球击退大圈位置[1] === 0) {
-            consol.log(`{"Name":"南北击退 南","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":109},"Thikness":5,"Color":4278255360,"Delay":8,"During":5.7}`);
+            //3击退位置
+            if (data.足球击退大圈位置[1] === 0) {
+              postAoe(`{"Name":"2向北击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":5,"During":8.6}`);
+            } 
+            if (data.足球击退大圈位置[1] === 2) {
+              postAoe(`{"Name":"2向南击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":5,"During":8.6}`);
+            } 
           }
-          if (data.足球击退大圈[1] === '739D' && data.足球击退大圈位置[1] === 2) {
-            consol.log(`{"Name":"南北击退 北","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":91},"Thikness":5,"Color":4278255360,"Delay":8,"During":5.7}`);
+          
+          //1击退2大圈
+          if (data.足球击退大圈[1] === '793D') {
+            //击退起点
+            if (data.足球击退大圈位置[0] === 1 && data.足球击退大圈位置[1] === 0) {
+              postAoe(`{"Name":"1东击退2北大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":116,"Y":0,"Z":102},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+            }
+            if (data.足球击退大圈位置[0] === 1&& data.足球击退大圈位置[1] === 2) {
+              postAoe(`{"Name":"1东击退2南大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":116,"Y":0,"Z":98},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+            }
+            if (data.足球击退大圈位置[0] === 3&& data.足球击退大圈位置[1] === 0) {
+              postAoe(`{"Name":"1西击退2北大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":84,"Y":0,"Z":102},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+            }
+            if (data.足球击退大圈位置[0] === 3&& data.足球击退大圈位置[1] === 2) {
+              postAoe(`{"Name":"1西击退2南大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":84,"Y":0,"Z":98},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+            }
+
+            if (data.足球击退大圈位置[1] === 0) {
+              postAoe(`{"Name":"2向南击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":108},"Thikness":5,"Color":4278255360,"Delay":10,"During":3.6}`);            
+            }
+            if (data.足球击退大圈位置[1] === 2) {
+              postAoe(`{"Name":"2向北击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":92},"Thikness":5,"Color":4278255360,"Delay":10,"During":3.6}`);            
+            }
           }
         }
-        if (data.足球计数 === 2 && 足球第四下击退预测) {
-          //接击退
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 0) {
-            consol.log(`{"Name":"击退预测 北中心","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120},"Length":16,"Thikness":5,"Color":4278255360,"Delay":13.7,"During":3}`);
-          }
-          if (data.足球击退大圈[1] === '739C' && data.足球击退大圈位置[1] === 2) {
-            consol.log(`{"Name":"击退预测 南中心","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80},"Length":16,"Thikness":5,"Color":4278255360,"Delay":13.7,"During":3}`);
-          }
-        }
+        
 
       },
     },
@@ -526,6 +680,7 @@ Options.Triggers.push({
 
     //791E 四分核爆
     //7915 四分核爆之念
+    //7916 四分核爆之念(足球)
     //7919 四分核爆之现
 
     //791D 八分核爆
