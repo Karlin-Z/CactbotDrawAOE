@@ -23,7 +23,7 @@ const 人形态2诱导范围=true;
 const 位置 = 'MT';
 const 足球东西击退辅助 = true;
 const 足球南北击退辅助 = true;
-const 足球第四下击退预测 = true;
+const 足球第四下辅助 = true;
 
 const 火圈范围 = true;
 
@@ -269,6 +269,16 @@ Options.Triggers.push({
         if (!蛇石化背对) return;
         postAoe(`{"Name":"Back Example","AoeType":"Back","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"SeeAngle":95,"Thikness":5,"Color":4294901964,"CorrectColor":4278255360,"Delay":0,"During":8}`);
       },
+    },
+    {id: 'P8S 蛇石化 可移动提示',
+      type: 'StartsUsing',
+      // We could call the very first one out immediately on the Added Combatant line,
+      // but then we'd have to duplicate this.
+      netRegex: { id: '792B' },
+      suppressSeconds:1,
+      delaySeconds: 8,
+      alertText:'走走走',
+      
     },
     {id: 'P8S 石化扇形范围',
       // BBC = First in Line
@@ -729,8 +739,32 @@ Options.Triggers.push({
             }
           }
         }
-        
+        if (data.足球计数 === 2 && 足球第四下辅助)
+        {
+          if (data.足球击退大圈[1] === '793C')
+          {
+            if (data.足球击退大圈位置[1] === 0)
+            {
+              postAoe(`{"Name":"足球第四下 北击退辅助","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":10,"Thikness":5,"Color":4291559168,"Delay":13.6,"During":3}`);
+            }
+            if (data.足球击退大圈位置[1] === 2)
+            {
+              postAoe(`{"Name":"足球第四下 南击退辅助","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Length":10,"Thikness":5,"Color":4291559168,"Delay":13.6,"During":3}`);
+            }
+          }
 
+          if (data.足球击退大圈[1] === '793D')
+          {
+            if (data.足球击退大圈位置[1] === 0)
+            {
+              postAoe(`{"Name":"足球第四下 北大圈范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Radius":30,"Color":671154175,"Delay":13.6,"During":3}`);
+            }
+            if (data.足球击退大圈位置[1] === 2)
+            {
+              postAoe(`{"Name":"足球第四下 南大圈范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Radius":30,"Color":671154175,"Delay":13.6,"During":3}`);
+            }
+          }
+        }
       },
     },
     {id: 'P8S 第二次兽变身击退/大圈',
@@ -775,7 +809,7 @@ Options.Triggers.push({
             postAoe(`{"Name":"兽形态2 开场北大圈","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Radius":30,"Color":503382015,"Delay":0,"During":5.5}`);
           } else {
             //北击退
-            postAoe(`{"Name":"兽形态2 开场北击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":30,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
+            postAoe(`{"Name":"兽形态2 开场北击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80.0},"Length":30,"Thikness":5,"Color":671154175,"Delay":0,"During":5.5}`);
           }
         }
         // Boss will be facing South
@@ -786,7 +820,7 @@ Options.Triggers.push({
             postAoe(`{"Name":"兽形态2 开场南大圈","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Radius":30,"Color":503382015,"Delay":0,"During":5.5}`);
           }else {
             //南击退
-            postAoe(`{"Name":"兽形态2 开场南击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Length":30,"Thikness":5,"Color":4278255360,"Delay":0,"During":5.5}`);
+            postAoe(`{"Name":"兽形态2 开场南击退","AoeType":"Repel","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":120.0},"Length":30,"Thikness":5,"Color":671154175,"Delay":0,"During":5.5}`);
           }
         }
           
