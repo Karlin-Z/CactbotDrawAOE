@@ -449,7 +449,7 @@ Options.Triggers.push({
         
         if (data.足球计数 === 1 && 足球东西击退辅助)
         {
-          if (data.足球开始位置 = 'N') {
+          if (data.足球开始位置 === 'N') {
             //1击退
             if (data.足球击退大圈[0] === '793C') {
               //东击退
@@ -567,7 +567,7 @@ Options.Triggers.push({
               }
             }
           }
-          if (data.足球开始位置 = 'S') {
+          if (data.足球开始位置 === 'S') {
             //1击退
             if (data.足球击退大圈[0] === '793C') {
               //东击退
