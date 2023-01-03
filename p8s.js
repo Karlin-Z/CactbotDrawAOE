@@ -73,6 +73,7 @@ Options.Triggers.push({
       足球击退大圈位置: [],
       火圈单位:[],
       存储核爆:'',
+      强化阶段:false,
     };
   },
   triggers: [
@@ -267,7 +268,17 @@ Options.Triggers.push({
       netRegex: { id: '792B' },
       run: async (data, matches) => {
         if (!蛇石化背对) return;
-        postAoe(`{"Name":"Back Example","AoeType":"Back","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"SeeAngle":95,"Thikness":5,"Color":4294901964,"CorrectColor":4278255360,"Delay":0,"During":8}`);
+        postAoe(`{"Name":"Back Example","AoeType":"Back","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"SeeAngle":95,"Thikness":5,"Color":4294901964,"CorrectColor":4278255360,"Delay":0,"During":8.5}`);
+      },
+    },
+    {id: 'P8S 强化蛇体积',
+      type: 'StartsUsing',
+      // We could call the very first one out immediately on the Added Combatant line,
+      // but then we'd have to duplicate this.
+      netRegex: { id: '792B' },
+      run: async (data, matches) => {
+        if (!data.强化阶段) return;
+        postAoe(`{"Name":"强化射体积","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":0.5,"Color":1694433510,"Delay":0,"During":25}`);
       },
     },
     {id: 'P8S 蛇石化 可移动提示',
@@ -276,7 +287,7 @@ Options.Triggers.push({
       // but then we'd have to duplicate this.
       netRegex: { id: '792B' },
       suppressSeconds:1,
-      delaySeconds: 8,
+      delaySeconds: 8.5,
       alertText:'走走走',
     },
     {id: 'P8S 石化扇形范围',
@@ -293,8 +304,8 @@ Options.Triggers.push({
       },
       run: (data, matches) => {
         if(!石眼范围) return;
-        let d=parseFloat(matches.duration)-3.5;
-        postAoe(`{"Name":"石眼石化 ${matches.target}","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":25,"Angle":30,"Rotation":0.0,"Color":838926335,"Delay":${d},"During":3.5}`)
+        let d=parseFloat(matches.duration)-3;
+        postAoe(`{"Name":"石眼石化 ${matches.target}","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":25,"Angle":30,"Rotation":0.0,"Color":838926335,"Delay":${d},"During":3}`)
       },
     },
     {id: 'P8S 蛇毒范围',
@@ -302,7 +313,6 @@ Options.Triggers.push({
       netRegex: { effectId: 'CFE' },
       condition: (data, matches) => {
         return (!蛇毒范围仅显示自己)||matches.target===data.me;
-        
       },
       run: (data, matches) => {
         if(!蛇毒范围) return;
@@ -327,6 +337,7 @@ Options.Triggers.push({
       delaySeconds: 0.5,
       run: async (data, matches) => {
         data.火圈单位.push(matches);
+        data.强化阶段=true;
         if(!火圈范围) return;
         postAoe(`{"Name":"火蛇1 火圈","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":23,"Color":838926335,"Delay":0,"During":5}`);
         postAoe(`{"Name":"火蛇1 火圈","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":23,"Color":838926335,"Delay":0,"During":5}`);
@@ -708,6 +719,7 @@ Options.Triggers.push({
             //3击退位置
             if (data.足球击退大圈位置[1] === 0) {
               postAoe(`{"Name":"2向北击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":92.0},"Thikness":5,"Color":4278255360,"Delay":5,"During":8.6}`);
+            
             } 
             if (data.足球击退大圈位置[1] === 2) {
               postAoe(`{"Name":"2向南击退位置","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":108.0},"Thikness":5,"Color":4278255360,"Delay":5,"During":8.6}`);
@@ -719,15 +731,19 @@ Options.Triggers.push({
             //击退起点
             if (data.足球击退大圈位置[0] === 1 && data.足球击退大圈位置[1] === 0) {
               postAoe(`{"Name":"1东击退2北大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":116,"Y":0,"Z":102},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+              postAoe(`{"Name":"击退起点","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":116,"Y":0,"Z":102},"Radius":0.25,"Color":1090584320,"Delay":5,"During":5}`);
             }
             if (data.足球击退大圈位置[0] === 1&& data.足球击退大圈位置[1] === 2) {
               postAoe(`{"Name":"1东击退2南大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":116,"Y":0,"Z":98},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+              postAoe(`{"Name":"击退起点","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":116,"Y":0,"Z":98},"Radius":0.25,"Color":1090584320,"Delay":5,"During":5}`);
             }
             if (data.足球击退大圈位置[0] === 3&& data.足球击退大圈位置[1] === 0) {
               postAoe(`{"Name":"1西击退2北大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":84,"Y":0,"Z":102},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+              postAoe(`{"Name":"击退起点","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":84,"Y":0,"Z":102},"Radius":0.25,"Color":1090584320,"Delay":5,"During":5}`);
             }
             if (data.足球击退大圈位置[0] === 3&& data.足球击退大圈位置[1] === 2) {
               postAoe(`{"Name":"1西击退2南大圈起点","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":84,"Y":0,"Z":98},"Thikness":5,"Color":4278255360,"Delay":5,"During":5}`);
+              postAoe(`{"Name":"击退起点","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":84,"Y":0,"Z":98},"Radius":0.25,"Color":1090584320,"Delay":5,"During":5}`);
             }
 
             if (data.足球击退大圈位置[1] === 0) {
@@ -865,39 +881,13 @@ Options.Triggers.push({
     
     
     // // ---------------- Part 2 ----------------
-    // {//aoe
-    //   id: 'P8S Aioniopyr',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '79DF', source: 'Hephaistos', capture: false },
-    //   infoText: (_data, _matches, output) => output.text(),
-    //   outputStrings: {
-    //     text: {
-    //       en: 'aoe + bleed',
-    //       de: 'AoE + Blutung',
-    //       fr: 'AoE + Saignement',
-    //       ja: 'AOE + 出血',
-    //       cn: 'AOE + 流血',
-    //       ko: '전체 공격 + 도트',
-    //     },
-    //   },
-    // },
-    // {//分散死刑
+    
+    // {//分散死刑6m
     //   id: 'P8S Tyrant\'s Unholy Darkness',
     //   type: 'StartsUsing',
     //   // Untargeted, with 79DE damage after.
     //   netRegex: { id: '79DD', source: 'Hephaistos', capture: false },
-    //   alertText: (_data, _matches, output) => output.text(),
-    //   outputStrings: {
-    //     text: {
-    //       en: 'Split Tankbusters',
-    //       de: 'getrennte Tankbuster',
-    //       fr: 'Séparez les Tankbuster',
-    //       ja: '2人同時タンク強攻撃',
-    //       cn: '分散死刑',
-    //       ko: '따로맞는 탱버',
-    //     },
-    //   },
-    // },
+    
     // {//左刀
     //   id: 'P8S Ashing Blaze Right',
     //   type: 'StartsUsing',
@@ -910,25 +900,7 @@ Options.Triggers.push({
     //     return output.right();
     //   },
     //   run: (data) => delete data.firstAlignmentSecondAbility,
-    //   outputStrings: {
-    //     right: Outputs.right,
-    //     rightAndSpread: {
-    //       en: 'Right + Spread',
-    //       de: 'Rechts + Verteilen',
-    //       fr: 'Droite + Écartez-vous',
-    //       ja: '右 + 散会',
-    //       cn: '右 + 分散',
-    //       ko: '오른쪽 + 산개',
-    //     },
-    //     rightAndStack: {
-    //       en: 'Right + Stack',
-    //       de: 'Rechts + Sammeln',
-    //       fr: 'Droite + Package',
-    //       ja: '右 + 頭割り',
-    //       cn: '右 + 分摊',
-    //       ko: '오른쪽 + 쉐어',
-    //     },
-    //   },
+    
     // },
     // {//右刀
     //   id: 'P8S Ashing Blaze Left',
@@ -941,37 +913,9 @@ Options.Triggers.push({
     //       return output.leftAndSpread();
     //     return output.left();
     //   },
-    //   run: (data) => delete data.firstAlignmentSecondAbility,
-    //   outputStrings: {
-    //     left: Outputs.left,
-    //     leftAndSpread: {
-    //       en: 'Left + Spread',
-    //       de: 'Links + Verteilen',
-    //       fr: 'Gauche + Écartez-vous',
-    //       ja: '左 + 散会',
-    //       cn: '左 + 分散',
-    //       ko: '왼쪽 + 산개',
-    //     },
-    //     leftAndStack: {
-    //       en: 'Left + Stack',
-    //       de: 'Links + Sammeln',
-    //       fr: 'Gauche + Package',
-    //       ja: '左 + 頭割り',
-    //       cn: '左 + 分摊',
-    //       ko: '왼쪽 + 쉐어',
-    //     },
-    //   },
+   
     // },
-    // {//概念支配
-    //   id: 'P8S High Concept',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '79AC', source: 'Hephaistos', capture: false },
-    //   response: Responses.bigAoe(),
-    //   run: (data) => {
-    //     data.concept = {};
-    //     data.splicer = {};
-    //   },
-    // },
+    
 
 
     // {//小怪冲

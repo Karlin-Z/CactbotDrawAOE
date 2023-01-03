@@ -351,88 +351,30 @@ Options.Triggers.push({
       // disabled: true,
       promise: async (data, matches) => {
         data.捕食Count++;
-        if (捕食Count===1) {
-          let result = await callOverlayHandler({
-            call: 'getCombatants',
-            ids: [parseInt(matches.sourceId, 16)],
-          });
-          data.捕食第一跳单位=result.combatants[0];
-        }
         return;
       },
       run: async (data, matches) => {
-
-        if (data.捕食Count === 1) {
-          if (!捕食作图) return;
-          let result = await callOverlayHandler({
-            call: 'getCombatants',
-            ids: [parseInt(matches.sourceId, 16)],
-          });
-          
-          let posX = result.combatants[0].PosX;
-          let posY = result.combatants[0].PosY;
-          let end= RotationVector(posX,posY);
-          postAoeNew(`{"Name":"捕食 第一跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${posX},"Y":${result.combatants[0].PosZ},"Z":${posY}},"Radius":12,"Color":838926335,"Delay":0,"During":1.5}`);
-          postAoeNew(`{"Name":"捕食 第二跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${end.x},"Y":${result.combatants[0].PosZ},"Z":${end.y}},"Radius":12,"Color":838926335,"Delay":0,"During":2.8}`);
-          
-        }
+        let result = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(matches.sourceId, 16)],
+        });
         
-        if (data.捕食Count === 3) {
-          if (!捕食作图) return;
-          let result = await callOverlayHandler({
-            call: 'getCombatants',
-            ids: [parseInt(matches.sourceId, 16)],
-          });
-          let a= (data.捕食第一跳单位.PosX+result.combatants[0].PosX)-200;
-          let b= (data.捕食第一跳单位.PosY+result.combatants[0].PosY)-200;
-          if (Math.abs(a)<2 && Math.abs(b)<2) {
-            //顺时针
-            
-            let posX = result.combatants[0].PosX;
-            let posY = result.combatants[0].PosY;
-            let jump4 = RotationVector(posX, posY,90);
-            let jump5 = RotationVector(jump4.x, jump4.y,-118.07);
-            let jump6 = RotationVector(jump5.x, jump5.y,-90);
-            let jump7 = RotationVector(jump6.x, jump6.y,-90);
-            let jump8 = RotationVector(jump7.x, jump7.y,-90);
-            postAoeNew(`{"Name":"捕食 第三跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${posX},"Y":${ result.combatants[0].PosZ},"Z":${posY}},"Radius":12,"Color":838926335,"Delay":0,"During":1.5}`);
-            postAoeNew(`{"Name":"捕食 第四跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump4.x},"Y":${result.combatants[0].PosZ},"Z":${jump4.y}},"Radius":12,"Color":838926335,"Delay":0,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第五跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump5.x},"Y":${result.combatants[0].PosZ},"Z":${jump5.y}},"Radius":12,"Color":838926335,"Delay":1.3,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第六跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump6.x},"Y":${result.combatants[0].PosZ},"Z":${jump6.y}},"Radius":12,"Color":838926335,"Delay":2.6,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第七跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump7.x},"Y":${result.combatants[0].PosZ},"Z":${jump7.y}},"Radius":12,"Color":838926335,"Delay":3.9,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第八跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump8.x},"Y":${result.combatants[0].PosZ},"Z":${jump8.y}},"Radius":12,"Color":838926335,"Delay":5.2,"During":2.8}`);
-            
-            
-          }else{
-            //逆时针
-            let posX = result.combatants[0].PosX;
-            let posY = result.combatants[0].PosY;
-            let jump4 = RotationVector(posX, posY,-90);
-            let jump5 = RotationVector(jump4.x, jump4.y,-90);
-            let jump6 = RotationVector(jump5.x, jump5.y,-90);
-            let jump7 = RotationVector(jump6.x, jump6.y,118.07);
-            let jump8 = RotationVector(jump7.x, jump7.y,90);
-            postAoeNew(`{"Name":"捕食 第三跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${posX},"Y":${ result.combatants[0].PosZ},"Z":${posY}},"Radius":12,"Color":838926335,"Delay":0,"During":1.5}`);
-            postAoeNew(`{"Name":"捕食 第四跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump4.x},"Y":${result.combatants[0].PosZ},"Z":${jump4.y}},"Radius":12,"Color":838926335,"Delay":0,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第五跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump5.x},"Y":${result.combatants[0].PosZ},"Z":${jump5.y}},"Radius":12,"Color":838926335,"Delay":1.3,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第六跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump6.x},"Y":${result.combatants[0].PosZ},"Z":${jump6.y}},"Radius":12,"Color":838926335,"Delay":2.6,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第七跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump7.x},"Y":${result.combatants[0].PosZ},"Z":${jump7.y}},"Radius":12,"Color":838926335,"Delay":3.9,"During":2.8}`);
-            postAoeNew(`{"Name":"捕食 第八跳","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${jump8.x},"Y":${result.combatants[0].PosZ},"Z":${jump8.y}},"Radius":12,"Color":838926335,"Delay":5.2,"During":2.8}`);
-          }
-        }
+        let posX = result.combatants[0].PosX;
+        let posY = result.combatants[0].PosY;
+        postAoeNew(`{"Name":"捕食","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${posX},"Y":${result.combatants[0].PosZ},"Z":${posY}},"Radius":12,"Color":838926335,"Delay":0,"During":1.5}`);
         if (data.捕食Count === 8 && 捕食踩圈点标记) {
           switch (捕食踩圈点.toUpperCase()) {
             case 'A':
-              postAoe(`{"AoeType":8,"PostionType":2,"ActorName":"${data.me}","PostionType2":3,"Postion2":{"X":100,"Y":-300,"Z":92},"Thickness":5.0,"Color":4278255360,"Delay":0.0,"During":4.5}`)
+              postAoeNew(`{"Name":"捕食踩圈 A","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":-300,"Z":92},"Thikness":5,"Color":4293459712,"Delay":0,"During":5}`);
               break;
             case 'B':
-              postAoe(`{"AoeType":8,"PostionType":2,"ActorName":"${data.me}","PostionType2":3,"Postion2":{"X":108,"Y":-300,"Z":100},"Thickness":5.0,"Color":4278255360,"Delay":0.0,"During":4.5}`)
+              postAoeNew(`{"Name":"捕食踩圈 B","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":108,"Y":-300,"Z":100},"Thikness":5,"Color":4293459712,"Delay":0,"During":5}`);
               break;
             case 'C':
-              postAoe(`{"AoeType":8,"PostionType":2,"ActorName":"${data.me}","PostionType2":3,"Postion2":{"X":100,"Y":-300,"Z":108},"Thickness":5.0,"Color":4278255360,"Delay":0.0,"During":4.5}`)
+              postAoeNew(`{"Name":"捕食踩圈 C","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":92,"Y":-300,"Z":100},"Thikness":5,"Color":4293459712,"Delay":0,"During":5}`);
               break;
             case 'D':
-              postAoe(`{"AoeType":8,"PostionType":2,"ActorName":"${data.me}","PostionType2":3,"Postion2":{"X":92,"Y":-300,"Z":100},"Thickness":5.0,"Color":4278255360,"Delay":0.0,"During":4.5}`)
+              postAoeNew(`{"Name":"捕食踩圈 D","AoeType":"Link","CentreType":"ActorName","CentreValue":"${data.me}","Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":-300,"Z":108},"Thikness":5,"Color":4293459712,"Delay":0,"During":5}`);
               break;
             default:
               break;
