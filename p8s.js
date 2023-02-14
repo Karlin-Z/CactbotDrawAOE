@@ -861,7 +861,30 @@ Options.Triggers.push({
     //7914 八分核爆之念
     //7918 八分核爆之现
 
-    
+    {
+      id: 'P8S 本体小怪冲',
+      type: 'StartsUsing',
+      netRegex: { id: '7A8B' },
+      run:(data, matches) => {
+        postAoe(`{"Name":"本体小怪冲","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":40,"Width":10,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":6}`)
+      },
+    },
+    {
+      id: 'P8S 左右刀',
+      type: 'StartsUsing',
+      netRegex: { id: ['79D7','79D8'] },
+      run:(data, matches) => {
+        if (matches.id==='79D7') {
+          //左
+          postAoe(`{"Name":"本体左右刀 左","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":90,"Y":0,"Z":80},"Length":40,"Width":20,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":6}`)
+        }
+        else
+        {
+          postAoe(`{"Name":"本体左右刀 右","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":110,"Y":0,"Z":80},"Length":40,"Width":20,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":6}`)
+        
+        }
+      },
+    },
     
 
 

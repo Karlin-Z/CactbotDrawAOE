@@ -216,6 +216,7 @@ Options.Triggers.push({
           return;
         }
         data.tetherSet.add(mark);
+        return;
       },
       alertText: (data, matches) =>{
         if (matches.target===data.me) {
@@ -362,7 +363,7 @@ Options.Triggers.push({
       run: (data, matches) => {
         if (!死刑范围) return;
         data.party.roleToPartyNames_['tank'].forEach(name => {
-          postAoe(`{"Name":"分摊死刑","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":6,"Color":1073807359,"Delay":0,"During":8}`);
+          postAoe(`{"Name":"分散死刑","AoeType":"Circle","CentreType":"ActorName","CentreValue":"${name}","Radius":6,"Color":1073807359,"Delay":0,"During":8}`);
         });
       },
 
@@ -403,7 +404,7 @@ Options.Triggers.push({
         let head = result.combatants[0].Heading;
         var dx = Math.sin(c.Heading) * 7;
         var dz = Math.cos(c.Heading) * 7;
-        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 1 * dx},"Y":${c.PosZ},"Z":${c.PosY + 1 * dz}},"Radius":7,"Color":1073807359,"Delay":0,"During":9.5}`);
+        postAoe(`{"Name":"地火","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX + 2 * dx},"Y":${c.PosZ},"Z":${c.PosY + 2 * dz}},"Radius":7,"Color":1073807359,"Delay":2,"During":9.5}`);
       },
     },
     {id: 'P7S 奶妈分摊',
