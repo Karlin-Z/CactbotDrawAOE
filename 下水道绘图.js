@@ -400,6 +400,7 @@ Options.Triggers.push({
             netRegex: { id: ['7491'] },
             run: (data, matches) => {
                 data.boos3parse++;
+                console.log(data.boos3parse);
             },
         },
         {
@@ -516,7 +517,7 @@ Options.Triggers.push({
                 }
                 let x = Math.sin(v) * 10 + mon.PosX;
                 let z = Math.cos(v) * 10 + mon.PosY;
-                if (Math.abs(mon.PosX - 289) > 1) {
+                if (Math.abs(mon.PosX - 289) > 2) {
                     data.不安全地板[Math.round((z + 120) + 0)] = 1;
                     data.不安全地板[Math.round((z + 120) + 1)] = 1;
                     data.不安全地板[Math.round((z + 120) + 2)] = 1;
@@ -626,15 +627,7 @@ Options.Triggers.push({
             }
         },
 
-        {
-            id: 'P3挡刀',
-            type: 'StartsUsing',
-            netRegex: NetRegexes.startsUsing({ id: '74B3' }),
-            alertText: (data, matches, output) => {
-                if (data.Vulnerabl.includes(data.me)) return '去背后躲避'
-                else return '在前挡刀';
-            }
-        },
+       
         {
             id: 'P3三运buff',
             type: 'GainsEffect',
@@ -647,6 +640,18 @@ Options.Triggers.push({
                 if (matches.count == '1D2') return '上方，踩内侧传送'
             }
         },
+        {
+            id: '手动重置',
+            regex: /ChatLog 00:0038::重置/,
+            alertText: '已重置',
+            run: async (data, matches) => {
+                data.绳次数 = 0;
+                data.boos3parse = 0;
+                data.不安全地板 = {};
+
+            },
+        }
+      
 
     ],
 
