@@ -480,7 +480,7 @@ Options.Triggers.push({
                     v -= Math.PI / 2;
                     let x = Math.sin(v) * 10 + mon.PosX;
                     let z = Math.cos(v) * 10 + mon.PosY;
-                    if (z > -85 || z < -125) return;
+                    if (Math.abs(z+105)>21) return;
                     postAoe(`{"Name":"P3传送阵目的地","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${x},"Y":${mon.PosZ},"Z":${z}},"Centre2Type":"PostionValue","Centre2Value":{"X":${mon.PosX},"Y":${mon.PosZ},"Z":${mon.PosY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":12}`);
 
                 }
@@ -488,7 +488,7 @@ Options.Triggers.push({
                     v += Math.PI / 2;
                     let x = Math.sin(v) * 10 + mon.PosX;
                     let z = Math.cos(v) * 10 + mon.PosY;
-                    if (z > -85 || z < -125) return;
+                    if (Math.abs(z+105)>21) return;
                     postAoe(`{"Name":"P3传送阵目的地","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${x},"Y":${mon.PosZ},"Z":${z}},"Centre2Type":"PostionValue","Centre2Value":{"X":${mon.PosX},"Y":${mon.PosZ},"Z":${mon.PosY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":12}`);
 
                 }
