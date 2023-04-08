@@ -83,7 +83,7 @@ Options.Triggers.push({
             netRegex: { id: ['7966'] },
             run: (data, matches) => {
                 if (!小怪钢铁) return;
-                postAoe(`{"Name":"小怪 无头骑士 钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0xE0000000,"Radius":10,"Color":${斗士aoe颜色},"Delay":0,"During":4}`);
+                postAoe(`{"Name":"小怪 无头骑士 钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":10,"Color":${斗士aoe颜色},"Delay":0,"During":4}`);
 
             }
         },
