@@ -29,7 +29,8 @@ const sendCommand = (command) => {
 
 
 Options.Triggers.push({
-    zoneId: 1075,
+    id: 'AnotherSildihnSubterrane_draw',
+    zoneId: ZoneId.AnotherSildihnSubterrane,
     initData: () => ({
         绳次数: 0,
         boos3parse: 0,

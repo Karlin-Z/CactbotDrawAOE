@@ -30,6 +30,7 @@ const sendCommand = (command) => {
 
 Options.Triggers.push({
     // zoneId: 1075,
+    id: 'AnotherSildihnSubterraneSavage_draw',
     zoneId: ZoneId.AnotherSildihnSubterraneSavage,
     initData: () => ({
         绳次数: 0,
@@ -38,7 +39,7 @@ Options.Triggers.push({
     }),
     triggers: [
         {//完成
-            id: '小怪 巨木龙卷',
+            id: '零式下水道 小怪 巨木龙卷',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: '796F' }),
             run: (data, matches) => {
@@ -47,7 +48,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '小怪 花 左右刀',
+            id: '零式下水道 小怪 花 左右刀',
             type: 'StartsUsing',
             netRegex: { id: ['7975', '7974', '7973'] },
             run: (data, matches) => {
@@ -63,7 +64,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '小怪 树 左右刀',
+            id: '零式下水道 小怪 树 左右刀',
             type: 'StartsUsing',
             netRegex: { id: ['797C', '797B', '797D'] },
             run: (data, matches) => {
@@ -79,7 +80,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '小怪 无头骑士 钢铁',
+            id: '零式下水道 小怪 无头骑士 钢铁',
             type: 'StartsUsing',
             netRegex: { id: ['797E'] },
             run: (data, matches) => {
@@ -90,7 +91,7 @@ Options.Triggers.push({
         },
 
         {//完成
-            id: '鼠鼠 P1擦拭',
+            id: '零式下水道 鼠鼠 P1擦拭',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: ['7778', '7779'] }),
             run: async (data, matches) => {
@@ -112,7 +113,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '鼠鼠 电气除尘',
+            id: '零式下水道 鼠鼠 电气除尘',
             type: 'StartsUsing',
             netRegex: { id: ['7780', '778D'] },
             run: async (data, matches) => {
@@ -121,7 +122,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '鼠鼠 滑行后aoe',
+            id: '零式下水道 鼠鼠 滑行后aoe',
             type: 'StartsUsing',
             netRegex: { id: '7781' },
             run: async (data, matches) => {
@@ -147,7 +148,7 @@ Options.Triggers.push({
             },
         },
         {//完成
-            id: '鼠鼠 小怪冰凉除尘',
+            id: '零式下水道 鼠鼠 小怪冰凉除尘',
             type: 'StartsUsing',
             netRegex: { id: ['777E', '778B'] },
             run: async (data, matches) => {
@@ -160,7 +161,7 @@ Options.Triggers.push({
             },
         },
         {//完成
-            id: '鼠鼠 风清除尘',
+            id: '零式下水道 鼠鼠 风清除尘',
             type: 'StartsUsing',
             netRegex: { id: ['777F', '778C'] },
             run: async (data, matches) => {
@@ -172,7 +173,7 @@ Options.Triggers.push({
         //777A变绿
         //777A变白
         {//完成
-            id: '鼠鼠 变色',
+            id: '零式下水道 鼠鼠 变色',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: ['777B', '777A', '777C'] }),
             run: (data, matches, output) => {
@@ -183,7 +184,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '鼠鼠 变色清除',
+            id: '零式下水道 鼠鼠 变色清除',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: ['777B', '777A'] }),
             delaySeconds: 20,
@@ -194,7 +195,7 @@ Options.Triggers.push({
         },
         //CEA 白（蓝） CEB黄球 CE9绿球
         {
-            id: '鼠鼠 球处理',
+            id: '零式下水道 鼠鼠 球处理',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: ['CEA', 'CEB', 'CE9'], capture: true }),
             condition: (data, matches) => Boolean(data.boss),
@@ -207,7 +208,7 @@ Options.Triggers.push({
             }
         },
         {
-            id: '鼠鼠 球连线',
+            id: '零式下水道 鼠鼠 球连线',
             type: 'Tether',
             netRegex: NetRegexes.tether({ id: '00D8' }),
             durdurationSeconds: 15,
@@ -315,7 +316,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '斗士 突击范围',
+            id: '零式下水道 斗士 突击范围',
             type: 'StartsUsing',
             netRegex: { id: ['779D', '779E'] },
             run: async (data, matches) => {
@@ -328,7 +329,7 @@ Options.Triggers.push({
             },
         },
         {//完成
-            id: '斗士 钢铁范围',
+            id: '零式下水道 斗士 钢铁范围',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: ['779F', '77A0', '77A1'] }),
             run: (data, matches, output) => {
@@ -350,7 +351,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '斗士 分散分摊范围',
+            id: '零式下水道 斗士 分散分摊范围',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: ['CDA', 'CDC', 'CDD'], capture: true }),
             alertText: (data, matches, output) => {
@@ -374,7 +375,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '斗士 引导地面范围',
+            id: '零式下水道 斗士 引导地面范围',
             type: 'Ability',
             netRegex: { id: '77B9' },
             suppressSeconds: 10,
@@ -383,7 +384,7 @@ Options.Triggers.push({
             }
         },
         {//完成
-            id: '斗士 喷火范围',
+            id: '零式下水道 斗士 喷火范围',
             type: 'StartsUsing',
             netRegex: { id: ['77B1', '77B2'] },
             run: async (data, matches) => {
@@ -396,7 +397,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '祭祀 阶段转换',
+            id: '零式下水道 祭祀 阶段转换',
             type: 'StartsUsing',
             netRegex: { id: ['7491'] },
             run: (data, matches) => {
@@ -405,7 +406,7 @@ Options.Triggers.push({
             },
         },
         {//完成
-            id: '祭祀 挡刀',
+            id: '零式下水道 祭祀 挡刀',
             type: 'Ability',
             netRegex: { id: ['76C6', '76C7'] },
             run: (data, matches, output) => {
@@ -419,7 +420,7 @@ Options.Triggers.push({
             }
         },
         {
-            id: '祭祀 T死刑',
+            id: '零式下水道 祭祀 T死刑',
             type: 'StartsUsing',
             netRegex: { id: ['76C4'] },
             run: (data, matches) => {
@@ -427,7 +428,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '祭祀 P1 转转转火圈',
+            id: '零式下水道 祭祀 P1 转转转火圈',
             regex: /Debug FB:ObjectEffect:(?<sourceId>[^:]*):(?<param1>[^:]*):(?<param2>[^:]*):/,
             run: async (data, matches) => {
                 if (data.boos3parse != 1) return;
@@ -456,7 +457,7 @@ Options.Triggers.push({
         },
 
         {
-            id: '祭祀 P2 石板aoe',
+            id: '零式下水道 祭祀 P2 石板aoe',
             type: 'AddedCombatant',
             netRegex: NetRegexes.addedCombatantFull({ npcNameId: '11397' }),
             run: (data, matches) => {
@@ -466,7 +467,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '祭祀 P3 传送阵目的地',
+            id: '零式下水道 祭祀 P3 传送阵目的地',
             regex: /Debug FB:ObjectEffect:(?<sourceId>[^:]*):(?<param1>[^:]*):(?<param2>[^:]*):/,
             run: async (data, matches) => {
                 if (data.boos3parse != 3) return;
@@ -496,7 +497,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '祭祀 P4 石板收集',
+            id: '零式下水道 祭祀 P4 石板收集',
             regex: /Debug FB:ObjectEffect:(?<sourceId>[^:]*):(?<param1>[^:]*):(?<param2>[^:]*):/,
             run: async (data, matches) => {
                 if (data.boos3parse != 4) return;
@@ -531,7 +532,7 @@ Options.Triggers.push({
             },
         },
         {
-            id: '祭祀 P4 石板AOE',
+            id: '零式下水道 祭祀 P4 石板AOE',
             regex: /Debug FB:ObjectEffect:(?<sourceId>[^:]*):(?<param1>[^:]*):(?<param2>[^:]*):/,
             delaySeconds: 0.2,
             suppressSeconds: 1,
@@ -556,7 +557,7 @@ Options.Triggers.push({
 
         
         {
-            id: 'P2踩塔',
+            id: '零式下水道 P2踩塔',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: 'CDB', capture: true }),
             condition: Conditions.targetIsYou(),
@@ -568,7 +569,7 @@ Options.Triggers.push({
             }
         },
         {
-            id: 'P2踩塔播报',
+            id: '零式下水道 P2踩塔播报',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: 'CDB', capture: true }),
             condition: Conditions.targetIsYou(),
@@ -583,7 +584,7 @@ Options.Triggers.push({
 
 
         {
-            id: 'P2分摊点名播报',
+            id: '零式下水道 P2分摊点名播报',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: ['CDA', 'CDC'], capture: true }),
             delaySeconds: 17,
@@ -602,7 +603,7 @@ Options.Triggers.push({
         },
 
         {//完成
-            id: 'P2九连环',
+            id: '零式下水道 P2九连环',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: '77A8' }),
             alertText: (data, matches, output) => {
@@ -610,7 +611,7 @@ Options.Triggers.push({
             }
         },
         {
-            id: 'P2死刑',
+            id: '零式下水道 P2死刑',
             type: 'StartsUsing',
             netRegex: NetRegexes.startsUsing({ id: '77B4' }),
             alertText: (data, matches, output) => {
@@ -623,7 +624,7 @@ Options.Triggers.push({
 
        
         {//完成
-            id: 'P3三运buff',
+            id: '零式下水道 P3三运buff',
             type: 'GainsEffect',
             netRegex: NetRegexes.gainsEffect({ effectId: 'B9A', capture: true }),
             condition: Conditions.targetIsYou(),
@@ -635,7 +636,7 @@ Options.Triggers.push({
             }
         },
         {
-            id: '手动重置',
+            id: '零式下水道 手动重置',
             regex: /ChatLog 00:0038::重置/,
             alertText: '已重置',
             run: async (data, matches) => {

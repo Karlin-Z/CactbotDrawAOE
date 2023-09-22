@@ -462,7 +462,7 @@ Options.Triggers.push({
         /] ChatLog 00:0:101:.{8}:0005:(?<id>.{4}):1EB83D:E0000000:(?<x>.+?):(?<y>.+?):/,
       delaySeconds:0.5,
       suppressSeconds:2,
-      response: async (data, matches) => {
+      run: async (data, matches) => {
         let dur=9;
 
         
@@ -574,8 +574,6 @@ Options.Triggers.push({
           }
 
         }
-
-
       },
     },
     { id: 'TOP P1循环程序接线标记',
@@ -1412,8 +1410,8 @@ Options.Triggers.push({
 
         if(attack[0]==data.myId || debugMode)
         {
-          postAoe(`{"Name":"P3小电视1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${attack[0]},"Centre2Type":"PostionValue","Centre2Value":{"X":${100+4.6*dx},"Y":0,"Z":81.5},"Thikness":5,"Color":4278255360,"Delay":0,"During":${dur}}`);
-          postAoe(`{"Name":"P3小电视1站位位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100+4.6*dx},"Y":0,"Z":81.5},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P3小电视1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${attack[0]},"Centre2Type":"PostionValue","Centre2Value":{"X":${100+4.6*dx},"Y":0,"Z":83},"Thikness":5,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P3小电视1站位位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100+4.6*dx},"Y":0,"Z":83},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P3小电视1南北线","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${100+4.6*dx},"Y":0,"Z":80.0},"Centre2Type":"PostionValue","Centre2Value":{"X":${100+4.6*dx},"Y":0,"Z":90},"Thikness":5,"Color":4278255360,"Delay":0,"During":${dur}}`);
           if(!debugMode)
           {
@@ -1702,6 +1700,9 @@ Options.Triggers.push({
         let dur=8;
         let delay=8-dur;
         let debugMode=false;
+
+        data.moveBuffer=undefined;
+        data.moveBuffer2=undefined;
 
         let r=(data.P5眼睛+2);
         var 中心={posX:100,posY:100};
@@ -2154,11 +2155,14 @@ Options.Triggers.push({
       run: (data, matches) => {
         let dur=4.5;
         let debugMode=false;
+        if (debugMode) {
+          dur=999
+        }
 
         let r=(2+data.P5眼睛);
         var 中心={posX:100,posY:100};
         //近线组固定
-        var 近线1=RotatePointFromCentre({posX:86.7,posY:100},中心,45*r);
+        var 近线1=RotatePointFromCentre({posX:87,posY:100},中心,45*r);
         var 近线2=RotatePointFromCentre({posX:113,posY:100},中心,45*r);
         var 近线3=RotatePointFromCentre({posX:90.8,posY:109.2},中心,45*r);
         var 近线4=RotatePointFromCentre({posX:109.2,posY:109.2},中心,45*r);
@@ -2176,7 +2180,7 @@ Options.Triggers.push({
 
         var 飞踢闲人_飞踢=RotatePointFromCentre({posX:100+dx*1,posY:87},中心,45*r);
         var 飞踢闲人_分摊闲人=RotatePointFromCentre({posX:100+dx*2,posY:100},中心,45*r);
-        var 飞踢闲人_分摊电视=RotatePointFromCentre({posX:6*dx+100,posY:100},中心,45*r);
+        var 飞踢闲人_分摊电视=RotatePointFromCentre({posX:5*dx+100,posY:100},中心,45*r);
 
 
         if (data.P5一运近线[0][0]==data.myId|| debugMode) {
@@ -2606,6 +2610,8 @@ Options.Triggers.push({
         var 内右3=RotatePointFromCentre({posX:110.16,posY:104.21},中心,45*r);
         var 内右4=RotatePointFromCentre({posX:104.21,posY:110.16},中心,45*r);
 
+
+        //极限距离34m
         var 外左1=RotatePointFromCentre({posX:92.73,posY:82.45},中心,45*r);
         var 外左2=RotatePointFromCentre({posX:83.37,posY:93.11},中心,45*r);
         var 外左3=RotatePointFromCentre({posX:82.45,posY:107.27},中心,45*r);
@@ -2895,11 +2901,11 @@ Options.Triggers.push({
           ///5:锁链3;
           ///6:攻击3;
           ///7:锁链2;
-          var 上=RotatePointFromCentre({posX:100,posY:96},中心,45*r+tr);
-          var 左1=RotatePointFromCentre({posX:96,posY:100},中心,45*r+tr);
-          var 左2=RotatePointFromCentre({posX:97.17,posY:102.83},中心,45*r+tr);
-          var 右1=RotatePointFromCentre({posX:104,posY:100},中心,45*r+tr);
-          var 右2=RotatePointFromCentre({posX:102.83,posY:102.83},中心,45*r+tr);
+          var 上=RotatePointFromCentre({posX:100,posY:93.5},中心,45*r+tr);
+          var 左1=RotatePointFromCentre({posX:93.5,posY:100},中心,45*r+tr);
+          var 左2=RotatePointFromCentre({posX:95.4,posY:104.6},中心,45*r+tr);
+          var 右1=RotatePointFromCentre({posX:106.5,posY:100},中心,45*r+tr);
+          var 右2=RotatePointFromCentre({posX:104.6,posY:104.6},中心,45*r+tr);
           
           if (data.P5二运前半段顺序[0]==data.myId || debugMode) {
             postAoe(`{"Name":"P5二运扇形站位内1","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${上.posX},"Y":0,"Z":${上.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
@@ -3016,14 +3022,16 @@ Options.Triggers.push({
           if (ps[i] == data.myId || debugMode) {
             let lid = i;
             let off=0;
+            let y=93.5;
             if (data.故障Buff == 'mid')
             {
               lid = (i + 7) % 8;
               off=22.5;
+              y=96;
             } 
             let nid = (i + 1) % 8;
             if (data.P5二运塔[lid] == 2 || (data.P5二运塔[lid] == 1 && data.P5二运塔[nid] == 0)) {
-              var p = RotatePointFromCentre({ posX: 100, posY: 96 }, 中心, 45 * lid + off);
+              var p = RotatePointFromCentre({ posX: 100, posY: y }, 中心, 45 * lid + off);
               postAoe(`{"Name":"P5二运${data.故障Buff}无脑塔${i}","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${p.posX},"Y":0,"Z":${p.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
               postAoe(`{"Name":"P5二运${data.故障Buff}无脑塔${i}连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${ps[i]},"Centre2Type":"PostionValue","Centre2Value":{"X":${p.posX},"Y":0,"Z":${p.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
               if(!debugMode)
@@ -3032,7 +3040,7 @@ Options.Triggers.push({
               }
             }
             if (data.P5二运塔[nid] == 2 || (data.P5二运塔[nid] == 1 && data.P5二运塔[lid] == 0)) {
-              var p = RotatePointFromCentre({ posX: 100, posY: 96 }, 中心, 45 * nid + off);
+              var p = RotatePointFromCentre({ posX: 100, posY: y }, 中心, 45 * nid + off);
               postAoe(`{"Name":"P5二运${data.故障Buff}无脑塔${i}","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${p.posX},"Y":0,"Z":${p.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
               postAoe(`{"Name":"P5二运${data.故障Buff}无脑塔${i}连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${ps[i]},"Centre2Type":"PostionValue","Centre2Value":{"X":${p.posX},"Y":0,"Z":${p.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
               if(!debugMode)
@@ -3060,8 +3068,10 @@ Options.Triggers.push({
       condition: (data) => data.阶段 === 'sigma',
       run: async (data, matches) => {
         let dur=11;
-        // dur =999;
         let debugMode=false;
+        if (debugMode) {
+          dur =999;
+        }
         const id = getHeadmarkerId(data, matches);
         if (id !=`009C` && id !=`009D`) return;
 
@@ -3477,37 +3487,81 @@ Options.Triggers.push({
         var 远引导1=RotatePointFromCentre({posX:81,posY:101},中心,45*r);
         var 远引导2=RotatePointFromCentre({posX:119,posY:101},中心,45*r);
 
+        data.moveBuffer=undefined;
+        data.moveBuffer2=undefined;
+
         if (finishSort[0]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远buff站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远buff站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[0]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}}`;
+          }
         }
         if (finishSort[1]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近buff站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近buff站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[1]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}}`;
+          }
         }
         if (finishSort[2]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运波动炮引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${波动炮引导1.posX},"Y":0,"Z":${波动炮引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运波动炮引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[2]},"Centre2Type":"PostionValue","Centre2Value":{"X":${波动炮引导1.posX},"Y":0,"Z":${波动炮引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${波动炮引导1.posX},"Y":0,"Z":${波动炮引导1.posY}}`;
+          }
         }
         if (finishSort[3]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运波动炮引导2站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${波动炮引导2.posX},"Y":0,"Z":${波动炮引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运波动炮引导2站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[3]},"Centre2Type":"PostionValue","Centre2Value":{"X":${波动炮引导2.posX},"Y":0,"Z":${波动炮引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${波动炮引导2.posX},"Y":0,"Z":${波动炮引导2.posY}}`;
+          }
         }
         if (finishSort[4]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[4]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}}`;
+          }
         }
         if (finishSort[5]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[5]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}}`;
+          }
         }
         if (finishSort[6]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[6]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}}`;
+          }
         }
         if (finishSort[7]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近世界引导2站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近世界引导2站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[7]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}}`;
+          }
+        }
+      },
+    },
+    { id: 'TOP P5 三运读条清除标记',
+      type: 'StartsUsing',
+      netRegex: { id: '8015'},
+      run: (data, matches) => {
+        if (data.triggerSetConfig.P5_3Marker) {
+          PostNamazuMarkClear();
         }
       },
     },
@@ -3684,38 +3738,72 @@ Options.Triggers.push({
         var 远buff=RotatePointFromCentre({posX:90,posY:101},中心,45*r);
         var 远引导1=RotatePointFromCentre({posX:81,posY:101},中心,45*r);
         var 远引导2=RotatePointFromCentre({posX:119,posY:101},中心,45*r);
+        data.moveBuffer=undefined;
+        data.moveBuffer2=undefined;
 
         if (finishSort[0]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远buff站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远buff站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[0]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远buff.posX},"Y":0,"Z":${远buff.posY}}`;
+          }
         }
         if (finishSort[1]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近buff站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近buff站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[1]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近buff.posX},"Y":0,"Z":${近buff.posY}}`;
+          }
         }
         if (finishSort[2]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运波动炮引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${冲击波引导1.posX},"Y":0,"Z":${冲击波引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运波动炮引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[2]},"Centre2Type":"PostionValue","Centre2Value":{"X":${冲击波引导1.posX},"Y":0,"Z":${冲击波引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${冲击波引导1.posX},"Y":0,"Z":${冲击波引导1.posY}}`;
+          }
         }
         if (finishSort[3]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运波动炮引导2站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${冲击波引导2.posX},"Y":0,"Z":${冲击波引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运波动炮引导2站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[3]},"Centre2Type":"PostionValue","Centre2Value":{"X":${冲击波引导2.posX},"Y":0,"Z":${冲击波引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${冲击波引导2.posX},"Y":0,"Z":${冲击波引导2.posY}}`;
+          }
         }
         if (finishSort[4]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[4]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远引导1.posX},"Y":0,"Z":${远引导1.posY}}`;
+          }
         }
         if (finishSort[5]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运远世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运远世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[5]},"Centre2Type":"PostionValue","Centre2Value":{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${远引导2.posX},"Y":0,"Z":${远引导2.posY}}`;
+          }
         }
         if (finishSort[6]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近世界引导1站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近世界引导1站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[6]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近引导1.posX},"Y":0,"Z":${近引导1.posY}}`;
+          }
         }
         if (finishSort[7]==data.myId || debugMode) {
           postAoe(`{"Name":"P5三运近世界引导2站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
           postAoe(`{"Name":"P5三运近世界引导2站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${finishSort[7]},"Centre2Type":"PostionValue","Centre2Value":{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          if(!debugMode)
+          {
+            data.moveBuffer = `{"X":${近引导2.posX},"Y":0,"Z":${近引导2.posY}}`;
+          }
         }
 
 
@@ -3724,14 +3812,18 @@ Options.Triggers.push({
     { id: 'TOP P6 射手天箭范围',
       type: 'StartsUsing',
       netRegex: { id: '7BA3'},
-      //7B9B 南北
-      //7B9C 东西
-      condition: (data) => data.阶段 === 'p6',
       suppressSeconds:1,
-      run: (data, matches) => {
+      run: async (data, matches) => {
         // let cor=1073807359;
         let cor=2147506175;
-        if (Math.abs(parseFloat(matches.x)-100)<1 || Math.abs(parseFloat(matches.y)-100)<1) {
+
+
+        let rr = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(matches.sourceId, 16)],
+        });
+        let result=rr.combatants[0];
+        if (Math.abs(parseFloat(result.PosX)-100)<1 || Math.abs(parseFloat(result.PosY)-100)<1) {
           postAoe(`{"Name":"TOP P6 中心射手天箭范围","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":80},"Length":40,"Width":10,"Rotation":0.0,"Color":${cor},"Delay":0,"During":8}`);
           postAoe(`{"Name":"TOP P6 中心射手天箭范围","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":80,"Y":0,"Z":100},"Length":40,"Width":10,"Rotation":-90.0,"Color":${cor},"Delay":0,"During":8}`);
           postAoe(`{"Name":"TOP P6 中心射手天箭范围2","AoeType":"Rect","CentreType":"PostionValue","CentreValue":{"X":107.5,"Y":0,"Z":80},"Length":40,"Width":5,"Rotation":0.0,"Color":${cor},"Delay":8,"During":2}`);
@@ -3762,6 +3854,189 @@ Options.Triggers.push({
 
         }
 
+      },
+    },
+    { id: 'TOP P6 陨石点名连线',
+      type: 'HeadMarker',
+      netRegex: {},
+      condition: (data) => data.阶段 === 'p6',
+      run: (data, matches) => {
+        const id = getHeadmarkerId(data, matches);
+        if (id !== '015A') return;
+        if (data.P6陨石点名 === undefined) data.P6陨石点名 = [];
+        data.P6陨石点名.push(parseInt(matches.targetId, 16));
+        if (data.P6陨石点名.length!=3) return; 
+
+        let dur=8;
+        let d3=true;
+        if(data.P6陨石点名.indexOf(data.TDHParty[6])==-1) d3=false;
+
+        data.moveBuffer=undefined;
+        data.moveBuffer2=undefined;
+
+        if (data.P6陨石点名.indexOf(data.myId)!==-1) {
+          postAoe(`{"Name":"P6陨石陨石站位1_陨石/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":115.5,"Y":0,"Z":100},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6陨石陨石站位2_陨石/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":84.5,"Y":0,"Z":100},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          if (d3) {
+            postAoe(`{"Name":"P6陨石陨石站位1_陨石/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":84.5},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          }else{
+            postAoe(`{"Name":"P6陨石陨石站位1_陨石/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":115.5},"Radius":0.5,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          }
+          postAoe(`{"Name":"P6陨石陨石点名连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.P6陨石点名[0]},"Centre2Type":"ActorId","Centre2Value":${data.P6陨石点名[1]},"Thikness":10,"Color":4278255615,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6陨石陨石点名连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.P6陨石点名[0]},"Centre2Type":"ActorId","Centre2Value":${data.P6陨石点名[2]},"Thikness":10,"Color":4278255615,"Delay":0,"During":${dur}}`);
+        }
+
+
+
+
+        if (data.P6陨石点名.indexOf(data.myId)==-1 && d3) {
+          postAoe(`{"Name":"P6陨石点名站位_分摊/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":115.8},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6陨石点名站位连线_分摊/d3陨石","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":115.8},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          data.moveBuffer = `{"X":100,"Y":0,"Z":114.8}`;
+        }
+        if (data.P6陨石点名.indexOf(data.myId)==-1 && !d3) {
+          postAoe(`{"Name":"P6陨石点名站位_分摊/d3陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":84.2},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6陨石点名站位连线_分摊/d3陨石","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":100,"Y":0,"Z":84.2},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+          data.moveBuffer = `{"X":100,"Y":0,"Z":85.2}`;
+        }
+        
+      },
+      
+    },
+    { id: 'TOP P6 平A范围',
+      type: 'Ability',
+      netRegex: { id: ['7BA1','7BA7','7BAA'] },
+      suppressSeconds: 3,
+      run: async (data, matches) => {
+        if (matches.id=='7BA1') data.p6BossId=matches.sourceId;
+        let rr = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [parseInt(data.p6BossId, 16)],
+        });
+        let tid=rr.combatants[0].TargetID;
+        // let tid=rr.combatants[0].NPCTargetID
+        let dur=8;
+        if (matches.id=='7BA7') dur=11;
+        postAoe(`{"Name":"TOP P6一仇平A","AoeType":"Circle","CentreType":"ActorId","CentreValue":${tid},"Radius":5.0,"Color":1073807359,"Delay":0,"During":${dur}}`);
+        postAoe(`{"Name":"TOP P6最远平A","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${data.p6BossId},"TrackType":"Farest","TrackValue":1,"Radius":5.0,"Color":1073807359,"Delay":0,"During":${dur}}`)
+      },
+    },
+    { id: 'TOP P6 俯冲范围',
+      type: 'StartsUsing',
+      netRegex: { id: ['7BA6']},
+      run: async (data, matches) => {
+        postAoe(`{"Name":"TOP P6 宇宙龙炎范围","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${data.p6BossId},"TrackType":"Nearest","TrackValue":2,"Radius":8.0,"Color":1073807359,"Delay":5,"During":3}`)
+      },
+    },
+    { id: 'TOP P6 八方波动炮位置',
+      type: 'StartsUsing',
+      netRegex: { id: ['7BA9'] },
+      run: async (data, matches) => {
+        var debugMode = false;
+        var dur = 10;
+        if (debugMode) dur = 999;
+
+
+        var 中心 = { posX: 100, posY: 100 };
+        var PA = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 0);
+        var P1 = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 1);
+        var PB = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 2);
+        var P2 = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 3);
+        var PC = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 4);
+        var P3 = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 5);
+        var PD = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 6);
+        var P4 = RotatePointFromCentre({ posX: 100, posY: 90 }, 中心, 45 * 7);
+        if (data.TDHParty[0] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${PA.posX},"Y":0,"Z":${PA.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[0]},"Centre2Type":"PostionValue","Centre2Value":{"X":${PA.posX},"Y":0,"Z":${PA.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[1] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${PB.posX},"Y":0,"Z":${PB.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[1]},"Centre2Type":"PostionValue","Centre2Value":{"X":${PB.posX},"Y":0,"Z":${PB.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[2] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${PD.posX},"Y":0,"Z":${PD.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[2]},"Centre2Type":"PostionValue","Centre2Value":{"X":${PD.posX},"Y":0,"Z":${PD.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[3] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${PC.posX},"Y":0,"Z":${PC.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[3]},"Centre2Type":"PostionValue","Centre2Value":{"X":${PC.posX},"Y":0,"Z":${PC.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[4] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${P3.posX},"Y":0,"Z":${P3.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[4]},"Centre2Type":"PostionValue","Centre2Value":{"X":${P3.posX},"Y":0,"Z":${P3.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[5] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${P2.posX},"Y":0,"Z":${P2.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[5]},"Centre2Type":"PostionValue","Centre2Value":{"X":${P2.posX},"Y":0,"Z":${P2.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[6] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${P4.posX},"Y":0,"Z":${P4.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[6]},"Centre2Type":"PostionValue","Centre2Value":{"X":${P4.posX},"Y":0,"Z":${P4.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+        if (data.TDHParty[7] == data.myId || debugMode) {
+          postAoe(`{"Name":"P6波动炮站位","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${P1.posX},"Y":0,"Z":${P1.posY}},"Radius":0.3,"Color":1073807104,"Delay":0,"During":${dur}}`);
+          postAoe(`{"Name":"P6波动炮站位连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.TDHParty[7]},"Centre2Type":"PostionValue","Centre2Value":{"X":${P1.posX},"Y":0,"Z":${P1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":${dur}}`);
+        }
+      },
+    },
+    { id: 'TOP P6地火起跑位置',
+      type: 'StartsUsing',
+      netRegex: { id: '7BAD'},
+      run: async (data, matches) => {
+        if (data.P6地火收集 === undefined) data.P6地火收集 = [];
+        if (data.P6地火收集.length === 4) data.P6地火收集 = [];
+        data.P6地火收集.push(parseInt(matches.sourceId, 16));
+
+        if (data.P6地火收集.length !== 2) return;
+
+        let result1 = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [data.P6地火收集[0]],
+        });
+        let result2 = await callOverlayHandler({
+          call: 'getCombatants',
+          ids: [data.P6地火收集[1]],
+        });
+        let c1 = result1.combatants[0];
+        let c2 = result2.combatants[0];
+
+        let a = (Math.atan2(c1.PosX - 100, c1.PosY - 100) - Math.atan2(c2.PosX - 100, c2.PosY - 100)) / Math.PI * 180;
+        if (a>180) a=a-360;
+        if (a<-180) a=a+360;
+        let end = RotatePointFromCentre({ posX: (c1.PosX - 100) / 24 * 18 + 100, posY: (c1.PosY - 100) / 24 * 18 + 100 }, { posX: 100, posY: 100 }, a*-1.5);
+        let a1 = RotatePointFromCentre({ posX: (c1.PosX - 100) / 24 * 18 + 100, posY: (c1.PosY - 100) / 24 * 18 + 100 }, { posX: 100, posY: 100 }, a*-1);
+        let a2 = { posX: (a1.posX - end.posX) *1.4 +end.posX, posY: (a1.posY - end.posY) *1.4 +end.posY };
+        let a3 = RotatePointFromCentre(a2, a1, 150);
+        let a4 = RotatePointFromCentre(a2, a1, -150);
+        postAoe(`{"Name":"TOP P6地火起跑位置","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${end.posX},"Y":0,"Z":${end.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":13}`);
+        postAoe(`{"Name":"TOP P6地火跑动方向1","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${end.posX},"Y":0,"Z":${end.posY}},"Centre2Type":"PostionValue","Centre2Value":{"X":${a1.posX},"Y":0,"Z":${a1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":15}`);
+        postAoe(`{"Name":"TOP P6地火跑动方向2","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${a3.posX},"Y":0,"Z":${a3.posY}},"Centre2Type":"PostionValue","Centre2Value":{"X":${a1.posX},"Y":0,"Z":${a1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":15}`);
+        postAoe(`{"Name":"TOP P6地火跑动方向3","AoeType":"Link","CentreType":"PostionValue","CentreValue":{"X":${a4.posX},"Y":0,"Z":${a4.posY}},"Centre2Type":"PostionValue","Centre2Value":{"X":${a1.posX},"Y":0,"Z":${a1.posY}},"Thikness":10,"Color":4278255360,"Delay":0,"During":15}`);
+
+
+        let r=-45;
+        let dis=7;
+        if (data.TDHParty[1] == data.myId)
+        {
+          r=45;
+          dis=14;
+        } 
+        let p = RotatePointFromCentre({ posX:100- (c2.PosX - 100) / 24 * 7, posY:100- (c2.PosY - 100) / 24 * 7 }, { posX: 100, posY: 100 }, r);
+        let p2 = RotatePointFromCentre({ posX:100- (c2.PosX - 100) / 24 * dis, posY:100- (c2.PosY - 100) / 24 * dis }, { posX: 100, posY: 100 }, r);
+        data.moveBuffer = `{"X":${p.posX},"Y":0,"Z":${p.posY}}`;
+        data.moveBuffer2 = `{"X":${p2.posX},"Y":0,"Z":${p2.posY}}`;
+      },
+    },
+    { id: 'TOP P6 地火起跑提示',
+      type: 'StartsUsing',
+      netRegex: { id: '7BAF'},
+      suppressSeconds: 20,
+      alertText: (_data, _matches, output) => output.text(),
+      outputStrings: {
+        text: {
+          cn: '走走走',
+        },
       },
     },
   ],
