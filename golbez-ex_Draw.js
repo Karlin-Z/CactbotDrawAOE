@@ -1,4 +1,4 @@
-let pipeAoe=false;
+let pipeAoe=true;
 let aoeport = 9588; //aoe监听的端口
 function postAoe(data) {
   if (pipeAoe) {
@@ -125,15 +125,15 @@ Options.Triggers.push({
     { 
       id: 'GolbezEx 旋风提示',
       type: 'StartsUsing',
-      netRegex: { id: '8468', capture: true },
-      delaySeconds:3.5,
+      netRegex: { id: '8468'},
+      delaySeconds:4,
       run: async (data, matches) => {
         var cs = (await callOverlayHandler({
           call: 'getCombatants',
           ids: data.PartyIds,
         })).combatants;
         for (let i = 0; i < 8; i++) {
-          postAoe(`{"Name":"旋风${i}","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${cs[i].PosX},"Y":0,"Z":${cs[i].PosY}},"Radius":5,"Color":1073807359,"Delay":0,"During":3.5}`);
+          postAoe(`{"Name":"旋风${i}","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${cs[i].PosX},"Y":0,"Z":${cs[i].PosY}},"Radius":5,"Color":1073807359,"Delay":0,"During":3}`);
           
         }
       },
@@ -211,11 +211,7 @@ Options.Triggers.push({
       promise:(data, matches) => {
         data.陨石计数++;
       },
-      alertText: (data, matches, output) => {
-        if (data.陨石计数==2) {
-          return '走走走';
-        }
-      },
+      
       run: async (data, matches) => {
         var cs = (await callOverlayHandler({
           call: 'getCombatants',
@@ -230,6 +226,24 @@ Options.Triggers.push({
           postAoe(`{"Name":"陨石","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${c.PosX},"Y":0,"Z":${c.PosY}},"Radius":6,"Color":1073807104,"Delay":0,"During":4}`);
         }
         
+      },
+    },
+    { 
+      id: 'GolbezEx 陨石疾跑',
+      type: 'Ability',
+      netRegex: { id: '84A8'},
+      suppressSeconds:9999,
+      alertText: (data, matches, output) => {
+          return '开疾跑';
+      },
+    },
+    { 
+      id: 'GolbezEx 陨石横穿提示',
+      type: 'Ability',
+      netRegex: { id: '84AA'},
+      suppressSeconds:9999,
+      alertText: (data, matches, output) => {
+          return '走走走';
       },
     },
 
@@ -266,6 +280,23 @@ Options.Triggers.push({
         postAoe(`{"Name":"击退踩塔 黑炎俯冲","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":40,"Width":12,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":4}`)
        },
     },
+    {
+      id: 'GolbezEx 集束黑龙闪 治疗分摊',
+      type: 'StartsUsing',
+      netRegex: { id: '8485' },
+      run: (data, matches) => {
+        postAoe(`{"Name":"集束黑龙闪 治疗分摊","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[2]},"Length":50,"Width":6,"Rotation":0.0,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":9.5}`);
+        postAoe(`{"Name":"集束黑龙闪 治疗分摊","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[3]},"Length":50,"Width":6,"Rotation":0.0,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":9.5}`);
+      },
+    },
+    {
+      id: 'GolbezEx 虚空龙卷 治疗分摊',
+      type: 'StartsUsing',
+      netRegex: { id: ['845D','8462']},
+      run: (data, matches) => {
+        postAoe(`{"Name":"虚空龙卷 治疗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":6}`)
+        },
+    },
     
     // {
     //   id: 'GolbezEx Abyssal Quasar',
@@ -299,24 +330,7 @@ Options.Triggers.push({
     //     },
     //   },
     // },
-    // {
-    //   id: 'GolbezEx Eventide Fall',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '8485', source: 'Golbez', capture: false },
-    //   alertText: (_data, _matches, output) => output.healerGroups(),
-    //   outputStrings: {
-    //     healerGroups: Outputs.healerGroups,
-    //   },
-    // },
-    // {
-    //   id: 'GolbezEx Void Tornado',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '845D', source: 'Golbez', capture: false },
-    //   alertText: (_data, _matches, output) => output.healerGroups(),
-    //   outputStrings: {
-    //     healerGroups: Outputs.healerGroups,
-    //   },
-    // },
+    
     // {
     //   id: 'GolbezEx Void Aero III',
     //   type: 'StartsUsing',
@@ -333,15 +347,7 @@ Options.Triggers.push({
     //     },
     //   },
     // },
-    // {
-    //   id: 'GolbezEx Void Blizzard III',
-    //   type: 'StartsUsing',
-    //   netRegex: { id: '8462', source: 'Golbez', capture: false },
-    //   alertText: (_data, _matches, output) => output.healerGroups(),
-    //   outputStrings: {
-    //     healerGroups: Outputs.healerGroups,
-    //   },
-    // },
+    
   ],
   
 });

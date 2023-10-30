@@ -12,17 +12,13 @@ function postAoe(data) {
     });
   }
 }
-function requestPartyList() {
-  if (pipeAoe){
-    sendExtraLogCommand(`GetData`,"Team");
-  }else{
-    fetch(`http://127.0.0.1:${aoeport}/GetData`, {
+function tp(data) {
+    fetch(`http://127.0.0.1:${9909}/Setting`, {
       method: "POST",
       mode: "no-cors",
       headers: { "Content-Type": "application/json" },
-      body: "Team"
+      body: `TP ${data}`
     });
-  }
 }
 const sendExtraLogCommand = (command,info) => {
   callOverlayHandler({ call: 'ExtraLog', c: `${command}`, p: `${info}` });
@@ -37,7 +33,27 @@ const RotatePointFromCentre = (point, centre, angle) => {
   return end;
 }
 
+const partnerMap={
+  0:6,
+  1:5,
+  2:4,
+  3:7,
+  4:2,
+  5:1,
+  6:0,
+  7:3,  
+}
 
+const 调停partnerMap={
+  0:5,
+  1:4,
+  2:7,
+  3:6,
+  4:1,
+  5:0,
+  6:3,
+  7:2,  
+}
 
 const headmarkers = {
   // vfx/lockon/eff/tank_lockon04_7sk1.avfx
@@ -60,18 +76,14 @@ Options.Triggers.push({
   zoneId: ZoneId.AnabaseiosTheEleventhCircleSavage,
   initData: () => {
     return {
-      upheldTethers: [],
-      lightDarkDebuff: {},
-      lightDarkBuddy: {},
-      lightDarkTether: {},
-      cylinderCollect: [],
-      styxCount: 4,
-      busterTargets: [],
+      调停点名:[4,4,4,4,0,0,0,0],
+      调停连线记录:[false,false,false,false,false,false,false,false],
+      调停buff记录:[false,false,false,false,false,false,false,false],
     };
   },
   triggers: [
     {
-      id: 'P11S Headmarker Tracker',
+      id: 'P11S 头顶点名解析',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data) => data.decOffset === undefined,
@@ -82,7 +94,7 @@ Options.Triggers.push({
 
     //分P
     {
-      id: 'P11S Phase Tracker',
+      id: 'P11S 分P',
       type: 'StartsUsing',
       netRegex: { id: ['8219', '81FE', '87D2'], source: 'Themis' },
       run: (data, matches) => {
@@ -96,17 +108,19 @@ Options.Triggers.push({
       },
     },
 
-    
-    
+    // 集合分摊
     {
-      id: 'P11S Dike Clean',
+      id: 'P11S 集合分摊',
       type: 'StartsUsing',
-      netRegex: { id: ['8230', '822F'], capture: false },
-      delaySeconds: 1,
-      suppressSeconds: 1,
-      run: (data) => data.busterTargets.length = 0,
+      netRegex: { id: '8217'},
+      run: (data, matches) => {
+        if (data.分摊次数===undefined) data.分摊次数=4;
+        data.分摊次数++;
+        let dur=5+data.分摊次数*1.2;
+        postAoe(`{"Name":"集合分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":${dur}}`);
+      },
+      
     },
-
     // 陪审否决 光暗八方
     {
       id: 'P11S 陪审否决 光暗八方',
@@ -114,40 +128,87 @@ Options.Triggers.push({
       netRegex: { id: ['81E6','81E7']},
       run: (data, matches) => {
         for (let i = 0; i < 8; i++) {
-          postAoe(`{"Name":"陪审否决 光暗八方 ${data.PartyInfos[i].Name}","AoeType":"Rect","CentreType":"ActorId","CentreValue":${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[i]},"Length":50,"Width":8,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":6}`);
+          postAoe(`{"Name":"陪审否决 光暗八方 ${data.PartyInfos[i].Name}","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[i]},"Length":50,"Width":8,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":4.5,"During":3.3}`);
         }
       },
     },
+    // 陪审否决 光暗八方 原地钢铁
     {
-      id: 'P11S 陪审否决 光八方 原地钢铁',
+      id: 'P11S 陪审否决 光暗八方 原地钢铁',
+      type: 'StartsUsing',
+      netRegex: { id: '81EA'},
+      run: (data, matches) => {
+       postAoe(`{"Name":"陪审否决 光八方 原地钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":5,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.1}`);
+      },
+    },
+    // 陪审否决 光八方 治疗分摊
+    {
+      id: 'P11S 陪审否决 光八方 治疗分摊',
       type: 'Ability',
       netRegex: { id: '81E8'},
       suppressSeconds:1,
       run: async (data, matches) => {
-        var cs = (await callOverlayHandler({
-          call: 'getCombatants',
-          ids: data.PartyIds,
-        })).combatants;
-        for (let i = 0; i < 8; i++) {
-          postAoe(`{"Name":"陪审否决 光八方 原地钢铁${data.PartyInfos[i].Name}","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${cs[i].PosX},"Y":0,"Z":${cs[i].PosY}},"Radius":5,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+        if (data.调停) {
+          // 0 暗远Dps
+          // 1 光远Dps
+          // 2 暗近Dps
+          // 3 光近Dps
+          // 4 暗远TN
+          // 5 光远TN
+          // 6 暗近TN
+          // 7 光近TN
+          var H1Light = data.调停点名[2] % 2 == 1;
+          var index = data.调停点名[data.PartyIds.indexOf(data.myId)];
+          var leftPart = (index == 0 || index == 2 || index == 5 || index == 7);
+          console.log(`${H1Light}|${leftPart}`);
+          if ((H1Light && leftPart) || (!H1Light && !leftPart)) {
+            postAoe(`{"Name":"调停 陪审否决 光八方 治疗分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
+            postAoe(`{"Name":"调停 陪审否决 光八方 治疗分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+          }
+          else {
+            postAoe(`{"Name":"调停 陪审否决 光八方 治疗分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+            postAoe(`{"Name":"调停 陪审否决 光八方 治疗分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
+          }
+        } else {
+          var index = data.PartyIds.indexOf(data.myId);
+          if (index == 0 || index == 2 || index == 4 || index == 6) {
+            postAoe(`{"Name":"陪审否决 光八方 治疗分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
+            postAoe(`{"Name":"陪审否决 光八方 治疗分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+          } else {
+            postAoe(`{"Name":"陪审否决 光八方 治疗分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+            postAoe(`{"Name":"陪审否决 光八方 治疗分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
+          }
         }
+
+
       },
     },
+    //陪审否决 暗八方 原地月环 
     {
-      id: 'P11S 陪审否决 暗八方 原地月环',
+      id: 'P11S 陪审否决 光暗八方 原地月环',
+      type: 'StartsUsing',
+      netRegex: { id: '81EB'},
+      run: (data, matches) => {
+       postAoe(`{"Name":"陪审否决 光暗八方 原地月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":9,"InnerRadius":2,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.1}`);
+      },
+    },
+    //陪审否决 暗八方 22分摊
+    {
+      id: 'P11S 陪审否决 暗八方 22分摊',
       type: 'Ability',
       netRegex: { id: '81E9'},
       suppressSeconds:1,
       run: async (data, matches) => {
-        var cs = (await callOverlayHandler({
-          call: 'getCombatants',
-          ids: data.PartyIds,
-        })).combatants;
-        for (let i = 0; i < 8; i++) {
-          postAoe(`{"Name":"陪审否决 光八方 原地月环${data.PartyInfos[i].Name}","AoeType":"Donut","CentreType":"PostionValue","CentreValue":{"X":${cs[i].PosX},"Y":0,"Z":${cs[i].PosY}},"Radius":9,"InnerRadius":2,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5}`);
+        if (data.调停) {
+          var index = data.调停点名.indexOf(调停partnerMap[data.调停点名[data.PartyIds.indexOf(data.myId)]]);
+          postAoe(`{"Name":"调停 陪审否决 暗八方 22分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[index]},"Radius":3,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
+        } else {
+          postAoe(`{"Name":"陪审否决 暗八方 22分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]]},"Radius":3,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`);
         }
       },
     },
+
+
     // 维持否决连线
     {
       id: 'P11S 维持否决连线',
@@ -168,34 +229,18 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: ['87D3','87D0']},
       run: (data, matches) => {
-        let dur=matches.id=='87D3' ? 7.7:11;
-        postAoe(`{"Name":"维持否决 光 单独","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.维持否决光},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":${dur}}`);
+        let dur=matches.id=='87D3' ? 7.7:4;
+        let delay=matches.id=='87D3' ? 0:7;
+        postAoe(`{"Name":"维持否决 光 单独","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.维持否决光},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":${delay},"During":${dur}}`);
       },
     },
+    //维持否决 光钢铁
     {
       id: 'P11S 维持否决 光 钢铁',
       type: 'StartsUsing',
-      netRegex: { id: '81F6'},
+      netRegex: { id: ['81F6','8224']},
       run: (data, matches) => {
         postAoe(`{"Name":"维持否决 光 钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":13,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.5}`);
-      },
-    },
-    //维持否决 暗
-    {
-      id: 'P11S 维持否决 暗',
-      type: 'StartsUsing',
-      netRegex: { id: ['87D4','87D1']},
-      run: (data, matches) => {
-        let dur=matches.id=='87D4' ? 7.7:11;
-        postAoe(`{"Name":"维持否决 暗","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.维持否决暗},"Radius":13,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":${dur}}`);
-      },
-    },
-    {
-      id: 'P11S 维持否决 暗 月环',
-      type: 'StartsUsing',
-      netRegex: { id: '81F7'},
-      run: (data, matches) => {
-        postAoe(`{"Name":"P11S 维持否决 暗 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":22,"InnerRadius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.5}`);
       },
     },
     //维持否决 光分摊
@@ -205,313 +250,376 @@ Options.Triggers.push({
       netRegex: { id: '81F2', capture: false },
       suppressSeconds: 5,
       run: async (data, matches) => {
-        for (let i = 2; i < 4; i++) {
-          postAoe(`{"Name":"P11S 维持否决 光分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":4.2}`);
+        let index = data.PartyIds.indexOf(data.myId);
+        if (index == 0 || index == 2 || index == 4 || index == 6) {
+          postAoe(`{"Name":"P11S 维持否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":4.2}`);
+          postAoe(`{"Name":"P11S 维持否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":4.2}`);
+        } else {
+          postAoe(`{"Name":"P11S 维持否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":4.2}`);
+          postAoe(`{"Name":"P11S 维持否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":4.2}`);
         }
       },
-      outputStrings: {
-        text: {
-          en: 'Out + Healer Stacks',
-          de: 'Raus + Heiler Gruppen',
-          fr: 'Extérieur + Package sur les heals',
-          ja: '外側で + 4:4あたまわり',
-          cn: '场外 + 治疗分摊',
-          ko: '밖으로 + 힐러 그룹 쉐어',
-        },
+    },
+    //维持否决 暗
+    {
+      id: 'P11S 维持否决 暗',
+      type: 'StartsUsing',
+      netRegex: { id: ['87D4','87D1']},
+      run: (data, matches) => {
+        let dur=matches.id=='87D4' ? 7.7:4;
+        let delay=matches.id=='87D4' ? 0:7;
+        postAoe(`{"Name":"维持否决 暗","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.维持否决暗},"Radius":13,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":${delay},"During":${dur}}`);
+        if (data.维持否决暗===data.myId && matches.id=='87D1' && !data.北边拉暗线) {
+          data.北边拉暗线=true;
+          postAoe(`{"Name":"戒律 维持否决 暗 a点","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":100,"Y":0,"Z":84},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":6,"During":5}`);
+          setTimeout(() => {
+            tp(`{"X":100,"Y":0,"Z":84}`);
+          }, 7000);
+        }
       },
     },
-    
+    //维持否决 暗月环
     {
-      id: 'P11S Upheld Overruling Dark Followup',
+      id: 'P11S 维持否决 暗 月环',
+      type: 'StartsUsing',
+      netRegex: { id: ['81F7','8225']},
+      run: (data, matches) => {
+        postAoe(`{"Name":"P11S 维持否决 暗 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":22,"InnerRadius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.5}`);
+      },
+    },
+    //维持否决 暗分摊
+    {
+      id: 'P11S 维持否决 暗分摊',
       type: 'Ability',
       netRegex: { id: '81F3', capture: false },
-      durationSeconds: 4,
       suppressSeconds: 5,
-      infoText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'In + Partners',
-          de: 'Rein + Partner',
-          fr: 'Intérieur + Partenaires',
-          ja: '内側で + ペア',
-          cn: '场中 + 两人分摊',
-          ko: '안으로 + 파트너',
-        },
+      run: async (data, matches) => {
+        let pid= data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]];
+        for (let i = 0; i < 4; i++) {
+          if (data.PartyIds[i]==pid || data.PartyIds[i]==data.myId) {
+            var col=data.triggerSetConfig.SafeAoeCol;
+          }else{
+            var col=data.triggerSetConfig.DangerAoeCol;
+          }
+          postAoe(`{"Name":"P11S 维持否决 暗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":3,"Color":${col},"Delay":0,"During":4.2}`);
+        }
+      },
+    },
+
+    // P11S 驳回否决 门Aoe
+    {
+      id: 'P11S 驳回否决 门Aoe',
+      type: 'StartsUsing',
+      netRegex: { id: ['8213','8214']},
+      run: (data, matches) => {
+        postAoe(`{"Name":"P11S 驳回否决 门Aoe","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":50,"Width":10,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5.5}`);
+      },
+    },
+    // P11S 驳回否决 光钢铁 44分摊
+    {
+      id: 'P11S 驳回否决 光钢铁',
+      type: 'StartsUsing',
+      netRegex: { id: '8788'},
+      run: (data, matches) => {
+        postAoe(`{"Name":"驳回否决 光钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":13,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":7.5,"During":3}`);
+
+        let index = data.PartyIds.indexOf(data.myId);
+        if (index == 0 || index == 2 || index == 4 || index == 6) {
+          postAoe(`{"Name":"P11S 驳回否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":7.5,"During":3}`);
+          postAoe(`{"Name":"P11S 驳回否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":7.5,"During":3}`);
+        } else {
+          postAoe(`{"Name":"P11S 驳回否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":7.5,"During":3}`);
+          postAoe(`{"Name":"P11S 驳回否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":7.5,"During":3}`);
+        }
+      },
+    },
+    // P11S 驳回否决 暗月环 22分摊
+    {
+      id: 'P11S 驳回否决 暗月环',
+      type: 'StartsUsing',
+      netRegex: { id: '8789'},
+      run: (data, matches) => {
+        postAoe(`{"Name":"P11S 驳回否决 暗月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":22,"InnerRadius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":7.5,"During":3}`);
+        let pid= data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]];
+        for (let i = 0; i < 4; i++) {
+          if (data.PartyIds[i]==pid || data.PartyIds[i]==data.myId) {
+            var col=data.triggerSetConfig.SafeAoeCol;
+          }else{
+            var col=data.triggerSetConfig.DangerAoeCol;
+          }
+          postAoe(`{"Name":"P11S 驳回否决 暗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":3,"Color":${col},"Delay":7.5,"During":3}`);
+        }
+      },
+    },
+    // P11S 球 Aoe
+    {
+      id: 'P11S 球 Aoe',
+      type: 'StartsUsing',
+      netRegex: { id: ['8215','8216']},
+      run: (data, matches) => {
+        postAoe(`{"Name":"球 Aoe","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":15,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":5.5}`);
       },
     },
 
     
-    //驳回否决 月环
+
+    // 分歧否决 光直剑
     {
-      id: 'P11S Upheld Ruling Dark Followup',
-      type: 'Ability',
-      netRegex: { id: '8221', capture: false },
-      suppressSeconds: 5,
-      infoText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Get in Donut',
-          de: 'Geh in den Donut',
-          fr: 'Intérieur du donut',
-          ja: 'ドーナツの内側へ',
-          cn: '进入月环',
-          ko: '도넛 안으로',
-        },
+      id: 'P11S 分歧否决 光直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '81EC'},
+      run: (data, matches) => {
+        var col=data.triggerSetConfig.DangerAoeCol%16777216;
+        postAoe(`{"Name":"分歧否决 光直剑","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":8.2}`);
+        postAoe(`{"Name":"分歧否决 光直剑扩散预测","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":26,"Rotation":0.0,"Color":${col},"Delay":0,"During":10.8}`);
+        postAoe(`{"Name":"分歧否决 光直剑扩散","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":26,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":8.2,"During":2.6}`);
+        
+        if (data.调停) {
+          var H1Light = data.调停点名[2] % 2 == 1;
+          var index = data.调停点名[data.PartyIds.indexOf(data.myId)];
+          var leftPart = (index == 0 || index == 2 || index == 5 || index == 7);
+          if ((H1Light && leftPart) || (!H1Light && !leftPart)) {
+            postAoe(`{"Name":"调停 分歧否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":3.8}`);
+            postAoe(`{"Name":"调停 分歧否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.8}`);
+          }
+          else {
+            postAoe(`{"Name":"调停 分歧否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":3.8}`);
+            postAoe(`{"Name":"调停 分歧否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":3.8}`);
+          }
+        } else {
+          var index = data.PartyIds.indexOf(data.myId);
+          if (index == 0 || index == 2 || index == 4 || index == 6) {
+            postAoe(`{"Name":"P11S 分歧否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":8.2,"During":3.8}`);
+            postAoe(`{"Name":"P11S 分歧否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":8.2,"During":3.8}`);
+          } else {
+            postAoe(`{"Name":"P11S 分歧否决 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":8.2,"During":3.8}`);
+            postAoe(`{"Name":"P11S 分歧否决 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":8.2,"During":3.8}`);
+          }
+        }
+
+        
+        
+        
       },
     },
-    //?????
+    // 分歧否决 暗直剑
     {
-      id: 'P11S Dark Perimeter Followup',
+      id: 'P11S 分歧否决 暗直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '81ED'},
+      run: (data, matches) => {
+        // postAoe(`{"Name":"分歧否决 暗直剑正","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":23,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":8.2}`);
+        // postAoe(`{"Name":"分歧否决 暗直剑反","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":23,"Width":16,"Rotation":180.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":8.2}`);
+        postAoe(`{"Name":"分歧否决 暗直剑","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":8.2}`);
+        postAoe(`{"Name":"分歧否决 暗直剑辣翅","AoeType":"HotWing","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"OuterWidth":20.0,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":8.2,"During":2.6}`)
+        
+        if (data.调停) {
+          var pid = data.PartyIds[data.调停点名.indexOf(调停partnerMap[data.调停点名[data.PartyIds.indexOf(data.myId)]])];
+          for (let i = 0; i < 8; i++) {
+            if (data.调停点名[i] % 2 == 0) {
+              if (data.PartyIds[i] == pid || data.PartyIds[i] == data.myId) {
+                var col = data.triggerSetConfig.SafeAoeCol;
+              } else {
+                var col = data.triggerSetConfig.DangerAoeCol;
+              }
+              postAoe(`{"Name":"P11S 调停 维持否决 暗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":3,"Color":${col},"Delay":8.2,"During":3.8}`);
+            }
+          }
+        } else {
+          var pid = data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]];
+          for (let i = 0; i < 4; i++) {
+            if (data.PartyIds[i] == pid || data.PartyIds[i] == data.myId) {
+              var col = data.triggerSetConfig.SafeAoeCol;
+            } else {
+              var col = data.triggerSetConfig.DangerAoeCol;
+            }
+            postAoe(`{"Name":"P11S 维持否决 暗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":3,"Color":${col},"Delay":8.2,"During":3.8}`);
+          }
+        }
+      },
+    },
+    // 戒律小怪 光直剑 MT拉光
+    {
+      id: 'P11S 戒律小怪 光直剑 MT拉光',
+      type: 'StartsUsing',
+      netRegex: { id: '821D' },
+      run: (data, matches) => {
+        if (data.PartyIds.indexOf(data.myId)!==0) return;
+        if (data.戒律小怪拉光) return;
+        data.戒律小怪拉光=true;
+        let x=parseFloat(matches.x);
+        let y=parseFloat(matches.y);
+        if(Math.hypot((x-88),(y-100))>22.5){
+          var epos={"X":100-(x-100)/22.5*11,"Y":0,"Z":100-(y-100)/22.5*11}
+        }else{
+          var epos={"X":100+(x-100)/22.5*11,"Y":0,"Z":100+(y-100)/22.5*11}
+        }
+        postAoe(`{"Name":"戒律小怪 光直剑 MT拉光","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":${JSON.stringify(epos)},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":4}`);
+        tp(JSON.stringify(epos));
+        postAoe(`{"Name":"戒律小怪 光直剑 MT拉光回位","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":88,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":4,"During":5}`);
+        setTimeout(() => {
+          tp(`{"X":88,"Y":0,"Z":100}`);
+        }, 4200);
+      }
+    },
+    // 戒律小怪 光直剑
+    {
+      id: 'P11S 小怪分歧否决 光直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '821D' },
+      run: (data, matches) => {
+        let delay=0;
+        let dur =9.2;
+        if (data.phase === 'letter') {
+          delay=5;
+          dur=4.2;
+        }
+        postAoe(`{"Name":"戒律小怪 光直剑扩散","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":26,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9.2,"During":3.2}`);
+        postAoe(`{"Name":"戒律小怪 光直剑","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":${delay},"During":${dur}}`);
+      },
+    },
+    // 戒律小怪 暗直剑
+    {
+      id: 'P11S 小怪分歧否决 暗直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '821E'},
+      run: (data, matches) => {
+        let delay=0;
+        let dur =9.2;
+        if (data.phase === 'letter') {
+          delay=5;
+          dur=4.2;
+        }
+        postAoe(`{"Name":"戒律小怪 暗直剑","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":${delay},"During":${dur}}`);
+        postAoe(`{"Name":"戒律小怪 暗直剑辣翅","AoeType":"HotWing","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":92,"Width":16,"OuterWidth":20.0,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9.2,"During":3.2}`)
+        
+      },
+    },
+    // 戒律BOSS 光直剑
+    {
+      id: 'P11S 戒律BOSS 光直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '87B3'},
+      run: (data, matches) => {
+        var col=data.triggerSetConfig.DangerAoeCol%16777216;
+        postAoe(`{"Name":"戒律BOSS 光直剑","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":9.8}`);
+        postAoe(`{"Name":"戒律BOSS 光直剑扩散预测","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":26,"Rotation":0.0,"Color":${col},"Delay":0,"During":9.8}`);
+        postAoe(`{"Name":"戒律BOSS 光直剑扩散","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":26,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9.8,"During":3.6}`);
+        
+        let index = data.PartyIds.indexOf(data.myId);
+        if (index == 0 || index == 2 || index == 4 || index == 6) {
+          postAoe(`{"Name":"P11S 戒律BOSS 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":9,"During":3.4}`);
+          postAoe(`{"Name":"P11S 戒律BOSS 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9,"During":3.4}`);
+        } else {
+          postAoe(`{"Name":"P11S 戒律BOSS 光分摊H1","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[2]},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9,"During":3.4}`);
+          postAoe(`{"Name":"P11S 戒律BOSS 光分摊H2","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[3]},"Radius":6,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":9,"During":3.4}`);
+        }
+      },
+    },
+    // 戒律BOSS 暗直剑
+    {
+      id: 'P11S 戒律BOSS 暗直剑',
+      type: 'StartsUsing',
+      netRegex: { id: '87B4'},
+      run: (data, matches) => {
+        postAoe(`{"Name":"戒律BOSS 暗直剑","AoeType":"Straight","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":9.8}`);
+        postAoe(`{"Name":"戒律BOSS 暗直剑辣翅","AoeType":"HotWing","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Length":46,"Width":16,"OuterWidth":20.0,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9.8,"During":2.6}`)
+        let pid= data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]];
+        for (let i = 0; i < 4; i++) {
+          if (data.PartyIds[i]==pid || data.PartyIds[i]==data.myId) {
+            var col=data.triggerSetConfig.SafeAoeCol;
+          }else{
+            var col=data.triggerSetConfig.DangerAoeCol;
+          }
+          postAoe(`{"Name":"P11S 戒律BOSS 暗分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":3,"Color":${col},"Delay":9,"During":3.4}`);
+        }
+      },
+    },
+    // 踩塔
+    {
+      id: 'P11S 踩塔',
       type: 'Ability',
       netRegex: { id: '8225', capture: false },
       condition: (data) => data.phase === 'letter',
       suppressSeconds: 5,
-      response: Responses.getTowers('alert'),
+      run: (data, matches) => {
+        let index= data.PartyIds.indexOf(data.myId);
+        if (index==0 || index==6) {
+          postAoe(`{"Name":"踩塔MT组","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":91.87,"Y":0,"Z":91.87},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`)
+        }
+        if (index==1 || index==5) {
+          postAoe(`{"Name":"踩塔ST组","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":108.13,"Y":0,"Z":108.13},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`)
+        }
+        if (index==2 || index==4) {
+          postAoe(`{"Name":"踩塔H1组","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":91.87,"Y":0,"Z":108.13},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`)
+        }
+        if (index==3 || index==4) {
+          postAoe(`{"Name":"踩塔H2组","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":108.13,"Y":0,"Z":91.87},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5}`)
+        }
+        
+      },
     },
 
-    // 分歧否决 光
+    // 调停开始
     {
-      id: 'P11S Divisive Overruling Light',
+      id: 'P11S 调停开始',
       type: 'StartsUsing',
-      netRegex: { id: '81EC', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      run: (data) => data.divisiveColor = 'light',
-      outputStrings: {
-        text: {
-          en: 'Sides => Healer Stacks + Out',
-          de: 'Seiten => Heiler Gruppen + Raus',
-          fr: 'Côtés => Extérieur + Package sur les heals',
-          ja: '横 => 外側で + 4:4あたまわり',
-          cn: '两侧 => 治疗分摊 + 场外',
-          ko: '양 옆 => 밖으로 + 힐러 그룹 쉐어',
-        },
+      netRegex: { id: '81FE'},
+      run: (data, matches) => {
+       data.调停=true;
       },
     },
-    // 分歧否决 暗
+    // 调停开始
     {
-      id: 'P11S Divisive Overruling Dark',
+      id: 'P11S 调停结束',
       type: 'StartsUsing',
-      netRegex: { id: '81ED', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      run: (data) => data.divisiveColor = 'dark',
-      outputStrings: {
-        text: {
-          en: 'Sides => In + Partners',
-          de: 'Seiten => Rein + Partner',
-          fr: 'Côtés => Intérieur + Partenaires',
-          ja: '横 => 内側で + ペア',
-          cn: '两侧 => 两人分摊 + 场内',
-          ko: '양 옆 => 안으로 + 파트너',
-        },
+      netRegex: { id: '8202'},
+      run: (data, matches) => {
+       data.调停=false;
       },
     },
-    // 分歧否决 后续
+    // 调停起跑位置
     {
-      id: 'P11S Divisive Overruling Dark Followup',
-      type: 'Ability',
-      netRegex: { id: '81EE', capture: false },
-      durationSeconds: 4,
-      suppressSeconds: 5,
-      infoText: (data, _matches, output) => {
-        if (data.divisiveColor === 'dark')
-          return output.dark();
-        if (data.divisiveColor === 'light')
-          return output.light();
-      },
-      run: (data) => delete data.divisiveColor,
-      outputStrings: {
-        light: {
-          en: 'Healer Stacks + Out',
-          de: 'Heiler Gruppen + Raus',
-          fr: 'Package sur les heals + Extérieur',
-          ja: '4:4あたまわり + 外側へ',
-          cn: '治疗分摊 + 场外',
-          ko: '힐러 그룹 쉐어 + 밖으로',
-        },
-        dark: {
-          en: 'In + Partners',
-          de: 'Rein + Partner',
-          fr: 'Intérieur + Partenaires',
-          ja: '内側へ + ペア',
-          cn: '场中 + 两人分摊',
-          ko: '안으로 + 파트너',
-        },
-      },
-    },
-    {
-      id: 'P11S Divisive Overruling Light Shadowed Messengers',
-      type: 'StartsUsing',
-      netRegex: { id: '87B3', source: 'Themis', capture: false },
-      durationSeconds: 8,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Healer Stacks + Out',
-          de: 'Heiler Gruppen + Raus',
-          fr: 'Extérieur + Package sur les heals',
-          ja: '4:4あたまわり + 外側へ',
-          cn: '治疗分摊 + 场外',
-          ko: '힐러 그룹 쉐어 + 밖으로',
-        },
+      id: 'P11S 调停起跑位置',
+      type: 'GainsEffect',
+      // DE1 = Light's Accord
+      // DE2 = Dark's Accord
+      // DE3 = Light's Discord
+      // DE4 = Dark's Discord
+      netRegex: { effectId: ['DE1', 'DE2', 'DE3', 'DE4'] },
+      run: (data, matches) => {
+        if (parseInt(matches.targetId,16)!=data.myId ) return;
+        if (data.光暗连线处理) return;
+        data.光暗连线处理=true;
+
+        const isLight = matches.effectId === 'DE1' || matches.effectId === 'DE3';
+        if(isLight)
+        {
+          if (data.role=='dps') {
+            postAoe(`{"Name":"调停 光DPS暗TN 起跑位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":114,"Y":0,"Z":100},"Radius":1,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            postAoe(`{"Name":"调停 光DPS暗TN 起跑位置","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":114,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            tp(`{"X":114,"Y":0,"Z":100}`);
+          }else{
+            postAoe(`{"Name":"调停 光TN暗DPS 起跑位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":86,"Y":0,"Z":100},"Radius":1,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            postAoe(`{"Name":"调停 光TN暗DPS 起跑位置","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":86,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            tp(`{"X":86,"Y":0,"Z":100}`);
+          }
+        }else{
+          if (data.role=='dps') {
+            postAoe(`{"Name":"调停 光TN暗DPS 起跑位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":86,"Y":0,"Z":100},"Radius":1,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            postAoe(`{"Name":"调停 光TN暗DPS 起跑位置","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":86,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            tp(`{"X":86,"Y":0,"Z":100}`);
+          }else{
+            postAoe(`{"Name":"调停 光DPS暗TN 起跑位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":114,"Y":0,"Z":100},"Radius":1,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            postAoe(`{"Name":"调停 光DPS暗TN 起跑位置","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":114,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":10}`)
+            tp(`{"X":114,"Y":0,"Z":100}`);
+          }
+        }
       },
     },
+    // 调停buff记录
     {
-      id: 'P11S Divisive Overruling Dark Shadowed Messengers',
-      type: 'StartsUsing',
-      netRegex: { id: '87B4', source: 'Themis', capture: false },
-      durationSeconds: 8,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Partners + In',
-          de: 'Partner + Rein',
-          fr: 'Partenaires + Intérieur',
-          ja: 'ペア + 内側へ',
-          cn: '两人分摊 + 场内',
-          ko: '파트너 + 안으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Dismissal Overruling Light',
-      type: 'StartsUsing',
-      netRegex: { id: '8784', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Knockback => Healer Stacks + Out',
-          de: 'Rückstoß => Heiler Gruppen + Raus',
-          fr: 'Poussée => Extérieur + Package sur les heals',
-          ja: 'ノックバック => 外側で + 4:4あたまわり',
-          cn: '击退 => 治疗分摊 + 场外',
-          ko: '넉백 => 밖으로 + 힐러 그룹 쉐어',
-        },
-      },
-    },
-    {
-      id: 'P11S Dismissal Overruling Light Followup',
-      type: 'Ability',
-      netRegex: { id: '8784', capture: false },
-      durationSeconds: 4,
-      suppressSeconds: 5,
-      infoText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Healer Stacks + Out',
-          de: 'Heiler Gruppen + Raus',
-          fr: 'Package sur les heals + Extérieur',
-          ja: '4:4あたまわり + 外側へ',
-          cn: '治疗分摊 + 场外',
-          ko: '힐러 그룹 쉐어 + 밖으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Dismissal Overruling Dark',
-      type: 'StartsUsing',
-      netRegex: { id: '8785', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Knockback => In + Partners',
-          de: 'Rückstoß => Rein + Partner',
-          fr: 'Poussée => Intérieur + Partenaires',
-          ja: 'ノックバック => 内側で + ペア',
-          cn: '击退 => 两人分摊 + 场内',
-          ko: '넉백 => 안으로 + 파트너',
-        },
-      },
-    },
-    {
-      id: 'P11S Dismissal Overruling Dark Followup',
-      type: 'Ability',
-      netRegex: { id: '8785', capture: false },
-      durationSeconds: 4,
-      suppressSeconds: 5,
-      infoText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'In + Partners',
-          de: 'Rein + Partner',
-          fr: 'Intérieur + Partenaires',
-          ja: '内側で + ペア',
-          cn: '场中 + 两人分摊',
-          ko: '안으로 + 파트너',
-        },
-      },
-    },
-    {
-      id: 'P11S Arcane Revelation Light Portals',
-      type: 'StartsUsing',
-      netRegex: { id: '820D', source: 'Themis', capture: false },
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Go to Dark Portals',
-          de: 'Geh zu einem Dunkel-Portal',
-          fr: 'Allez vers les portails sombres',
-          ja: 'やみの方へ',
-          cn: '去暗门前',
-          ko: '어둠 문 쪽으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Arcane Revelation Dark Portals',
-      type: 'StartsUsing',
-      netRegex: { id: '820E', source: 'Themis', capture: false },
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Go to Light Portals',
-          de: 'Geh zu einem Licht-Portal',
-          fr: 'Allez sur les portails de lumière',
-          ja: 'ひかりの方へ',
-          cn: '去光门前',
-          ko: '빛 문 쪽으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Arcane Revelation Light Orbs',
-      type: 'StartsUsing',
-      netRegex: { id: '820F', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Rotate to Dark Orbs',
-          de: 'Rotiere zu den dunklen Orbs',
-          fr: 'Tournez vers les orbes sombres',
-          ja: 'やみの玉の方へ',
-          cn: '暗球侧安全',
-          ko: '어둠 구슬 쪽으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Arcane Revelation Dark Orbs',
-      type: 'StartsUsing',
-      netRegex: { id: '8210', source: 'Themis', capture: false },
-      durationSeconds: 6,
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Rotate to Light Orbs',
-          de: 'Rotiere zu den licht Orbs',
-          fr: 'Tournez vers les orbes de lumière',
-          ja: 'ひかりの玉の方へ',
-          cn: '光球侧安全',
-          ko: '빛 구슬 쪽으로',
-        },
-      },
-    },
-    {
-      id: 'P11S Dark and Light Buff Collect',
+      id: 'P11S 调停buff记录',
       type: 'GainsEffect',
       // DE1 = Light's Accord
       // DE2 = Dark's Accord
@@ -520,11 +628,21 @@ Options.Triggers.push({
       netRegex: { effectId: ['DE1', 'DE2', 'DE3', 'DE4'] },
       run: (data, matches) => {
         const isLight = matches.effectId === 'DE1' || matches.effectId === 'DE3';
-        data.lightDarkDebuff[matches.target] = isLight ? 'light' : 'dark';
+
+        var index= data.PartyIds.indexOf(parseInt(matches.targetId,16));
+        if (data.调停buff记录[index]) return;
+        data.调停buff记录[index]=true;
+
+        
+        if(isLight)
+        {
+          data.调停点名[index]+=1;
+        }
       },
     },
+    // 调停连线记录
     {
-      id: 'P11S Dark and Light Tether Collect',
+      id: 'P11S 调停连线记录',
       type: 'Tether',
       // 00EC = light far tether (correct)
       // 00ED = light far tether (too close)
@@ -534,226 +652,46 @@ Options.Triggers.push({
       // 00F1 = near tether (too far)
       netRegex: { id: ['00EC', '00ED', '00EE', '00EF', '00F0', '00F1'] },
       run: (data, matches) => {
+
+        // 1 光
+        // 2 近
+        // 4 TN
+
+        // 0 暗远Dps
+        // 1 光远Dps
+        // 2 暗近Dps
+        // 3 光近Dps
+        // 4 暗远TN
+        // 5 光远TN
+        // 6 暗近TN
+        // 7 光近TN
+
+        
         const isNear = matches.id === '00F0' || matches.id === '00F1';
-        const nearFarStr = isNear ? 'near' : 'far';
-        data.lightDarkTether[matches.source] = data.lightDarkTether[matches.target] = nearFarStr;
-        data.lightDarkBuddy[matches.source] = matches.target;
-        data.lightDarkBuddy[matches.target] = matches.source;
-      },
-    },
-    {
-      id: 'P11S Dark and Light Tether Callout',
-      type: 'Tether',
-      netRegex: { id: ['00EC', '00ED', '00EE', '00EF', '00F0', '00F1'], capture: false },
-      delaySeconds: 0.5,
-      durationSeconds: 6,
-      suppressSeconds: 9999,
-      response: (data, _matches, output) => {
-        // cactbot-builtin-response
-        output.responseOutputStrings = {
-          lightNear: {
-            en: 'Light Near w/${player} (${role})',
-            de: 'Licht Nahe w/${player} (${role})',
-            fr: 'Lumière proche avec ${player} (${role})',
-            ja: 'ひかりニア => ${player} (${role})',
-            cn: '光靠近 => ${player} (${role})',
-            ko: '빛 가까이 +${player} (${role})',
-          },
-          lightFar: {
-            en: 'Light Far w/${player} (${role})',
-            de: 'Licht Entfernt w/${player} (${role})',
-            fr: 'Lumière éloignée avec ${player} (${role})',
-            ja: 'ひかりファー => ${player} (${role})',
-            cn: '光远离 => ${player} (${role})',
-            ko: '빛 멀리 +${player} (${role})',
-          },
-          darkNear: {
-            en: 'Dark Near w/${player} (${role})',
-            de: 'Dunkel Nahe w/${player} (${role})',
-            fr: 'Sombre proche avec ${player} (${role})',
-            ja: 'やみニア => ${player} (${role})',
-            cn: '暗靠近 => ${player} (${role})',
-            ko: '어둠 가까이 +${player} (${role})',
-          },
-          darkFar: {
-            en: 'Dark Far w/${player} (${role})',
-            de: 'Dunkel Entfernt w/${player} (${role})',
-            fr: 'Sombre éloigné avec ${player} (${role})',
-            ja: 'やみファー => ${player} (${role})',
-            cn: '暗远离 => ${player} (${role})',
-            ko: '어둠 멀리 +${player} (${role})',
-          },
-          otherNear: {
-            en: 'Other Near: ${player1}, ${player2}',
-            de: 'Anderes Nahe: ${player1}, ${player2}',
-            fr: 'Autre proche : ${player1}, ${player2}',
-            ja: '他のペア: ${player1}, ${player2}',
-            cn: '另一组靠近：${player1}, ${player2}',
-            ko: '다른 가까이: ${player1}, ${player2}',
-          },
-          otherFar: {
-            en: 'Other Far: ${player1}, ${player2}',
-            de: 'Anderes Entfernt: ${player1}, ${player2}',
-            fr: 'Autre éloigné : ${player1}, ${player2}',
-            ja: '他のペア: ${player1}, ${player2}',
-            cn: '另一组远离：${player1}, ${player2}',
-            ko: '다른 멀리: ${player1}, ${player2}',
-          },
-          tank: Outputs.tank,
-          healer: Outputs.healer,
-          dps: Outputs.dps,
-          unknown: Outputs.unknown,
-        };
-        const myColor = data.lightDarkDebuff[data.me];
-        const myBuddy = data.lightDarkBuddy[data.me];
-        const myLength = data.lightDarkTether[data.me];
-        if (myColor === undefined || myBuddy === undefined || myLength === undefined) {
-          // Heuristic for "is this a synthetic execution".
-          // TODO: maybe we need a field on data for this?
-          if (Object.keys(data.lightDarkDebuff).length === 0)
-            return;
-          console.log(`Dark and Light: missing data for ${data.me}`);
-          console.log(`Dark and Light: lightDarkDebuff: ${JSON.stringify(data.lightDarkDebuff)}`);
-          console.log(`Dark and Light: lightDarkBuddy: ${JSON.stringify(data.lightDarkBuddy)}`);
-          console.log(`Dark and Light: lightDarkTether: ${JSON.stringify(data.lightDarkTether)}`);
-          return;
+
+
+        var indexS= data.PartyIds.indexOf(parseInt(matches.sourceId,16));
+        var indexT= data.PartyIds.indexOf(parseInt(matches.targetId,16));
+        
+        if (!data.调停连线记录[indexS]) {
+          data.调停连线记录[indexS]=true;
+          if(isNear)
+          {
+            data.调停点名[indexS]+=2;
+          }
         }
-        let myBuddyRole;
-        if (data.party.isDPS(myBuddy))
-          myBuddyRole = output.dps();
-        else if (data.party.isTank(myBuddy))
-          myBuddyRole = output.tank();
-        else if (data.party.isHealer(myBuddy))
-          myBuddyRole = output.healer();
-        else
-          myBuddyRole = output.unknown();
-        const myBuddyShort = data.ShortName(myBuddy);
-        let alertText;
-        if (myLength === 'near') {
-          if (myColor === 'light')
-            alertText = output.lightNear({ player: myBuddyShort, role: myBuddyRole });
-          else
-            alertText = output.darkNear({ player: myBuddyShort, role: myBuddyRole });
-        } else {
-          if (myColor === 'light')
-            alertText = output.lightFar({ player: myBuddyShort, role: myBuddyRole });
-          else
-            alertText = output.darkFar({ player: myBuddyShort, role: myBuddyRole });
+        if (!data.调停连线记录[indexT]) {
+          data.调停连线记录[indexT]=true;
+          if(isNear)
+          {
+            data.调停点名[indexT]+=2;
+          }
         }
-        let infoText = undefined;
-        const playerNames = Object.keys(data.lightDarkTether);
-        const sameLength = playerNames.filter((x) => data.lightDarkTether[x] === myLength);
-        const others = sameLength.filter((x) => x !== data.me && x !== myBuddy).sort();
-        const [player1, player2] = others.map((x) => data.ShortName(x));
-        if (player1 !== undefined && player2 !== undefined) {
-          if (myLength === 'near')
-            infoText = output.otherNear({ player1: player1, player2: player2 });
-          else
-            infoText = output.otherFar({ player1: player1, player2: player2 });
-        }
-        return { alertText: alertText, infoText: infoText };
       },
     },
-    {
-      id: 'P11S Twofold Revelation Light',
-      type: 'StartsUsing',
-      netRegex: { id: '8211', source: 'Themis', capture: false },
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Go to Dark Orb + Dark Portals',
-          de: 'Geh zum dunklen Orb + dunkle Portale',
-          fr: 'Allez vers l\'orbe sombre + Portail sombre',
-          ja: 'やみ玉 + ポータル',
-          cn: '去暗球 + 暗门',
-          ko: '어둠 구슬 + 어둠 문',
-        },
-      },
-    },
-    {
-      id: 'P11S Twofold Revelation Dark',
-      type: 'StartsUsing',
-      netRegex: { id: '8212', source: 'Themis', capture: false },
-      alertText: (_data, _matches, output) => output.text(),
-      outputStrings: {
-        text: {
-          en: 'Go to Light Orb + Light Portals',
-          de: 'Geh zum hellen Orb + helle Portale',
-          fr: 'Allez vers l\'orbe de lumière + Portail de lumière',
-          ja: 'ひかり玉 ＋ ポータル',
-          cn: '去光球 + 光门',
-          ko: '빛 구슬 + 빛 문',
-        },
-      },
-    },
-    {
-      id: 'P11S Lightstream Collect',
-      type: 'HeadMarker',
-      netRegex: { target: 'Arcane Cylinder' },
-      condition: (data, matches) => {
-        const id = getHeadmarkerId(data, matches);
-        if (id !== headmarkers.orangeCW && id !== headmarkers.blueCCW)
-          return false;
-        data.cylinderCollect.push(matches);
-        return data.cylinderCollect.length === 3;
-      },
-      alertText: (data, _matches, output) => {
-        let cylinderValue = 0;
-        // targetId is in hex, but that's still lexicographically sorted so no need to parseInt.
-        const sortedCylinders = data.cylinderCollect.sort((a, b) => {
-          return a.targetId.localeCompare(b.targetId);
-        });
-        const markers = sortedCylinders.map((m) => getHeadmarkerId(data, m));
-        // Once sorted by id, the lasers will always be in NW, S, NE order.
-        // Create a 3 digit binary value, Orange = 0, Blue = 1.
-        // e.g. BBO = 110 = 6
-        for (const marker of markers) {
-          cylinderValue *= 2;
-          if (marker === headmarkers.blueCCW)
-            cylinderValue += 1;
-        }
-        // The safe spot is the one just CW of two reds or just CCW of two blues.
-        // There's always two of one color and one of the other.
-        const outputs = {
-          0b000: undefined,
-          0b001: output.northwest(),
-          0b010: output.east(),
-          0b011: output.northeast(),
-          0b100: output.southwest(),
-          0b101: output.west(),
-          0b110: output.southeast(),
-          0b111: undefined,
-        };
-        return outputs[cylinderValue];
-      },
-      run: (data) => data.cylinderCollect = [],
-      outputStrings: {
-        east: Outputs.east,
-        northeast: Outputs.northeast,
-        northwest: Outputs.northwest,
-        southeast: Outputs.southeast,
-        southwest: Outputs.southwest,
-        west: Outputs.west,
-      },
-    },
-    {
-      id: 'P11S Styx Stack',
-      type: 'StartsUsing',
-      netRegex: { id: '8217', source: 'Themis', capture: false },
-      preRun: (data) => {
-        data.styxCount++;
-      },
-      infoText: (data, _matches, output) => output.text({ num: data.styxCount }),
-      outputStrings: {
-        text: {
-          en: 'Stack (${num} times)',
-          de: 'Sammeln (${num} Mal)',
-          fr: 'Packez-vous (${num} fois)',
-          ja: '頭割り（${num}回）',
-          cn: '集合分摊 (${num}次)',
-          ko: '쉐어뎀 (${num}번)',
-        },
-      },
-    },
+
+
+    
+    
   ],
 });

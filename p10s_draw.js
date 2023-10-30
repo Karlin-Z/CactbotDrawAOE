@@ -1,4 +1,4 @@
-let pipeAoe=false;
+let pipeAoe=true;
 let aoeport = 9588; //aoe监听的端口
 function postAoe(data) {
   if (pipeAoe) {
@@ -9,18 +9,6 @@ function postAoe(data) {
       mode: "no-cors",
       headers: { "Content-Type": "application/json" },
       body: data
-    });
-  }
-}
-function requestPartyList() {
-  if (pipeAoe){
-    sendExtraLogCommand(`GetData`,"Team");
-  }else{
-    fetch(`http://127.0.0.1:${aoeport}/GetData`, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: "Team"
     });
   }
 }
@@ -35,6 +23,17 @@ const RotatePointFromCentre = (point, centre, angle) => {
   end.x = centre.x+Math.sin((rot + angle) / 180 * Math.PI) * dis;
   end.y = centre.y-Math.cos((rot + angle) / 180 * Math.PI) * dis; 
   return end;
+}
+
+const partnerMap={
+  0:4,
+  1:5,
+  2:6,
+  3:7,
+  4:0,
+  5:1,
+  6:2,
+  7:3,  
 }
 
 
@@ -81,7 +80,7 @@ Options.Triggers.push({
   },
   triggers: [
     {
-      id: 'P10S Headmarker Tracker',
+      id: 'P10S 头顶点名解析',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data) => data.decOffset === undefined,
@@ -113,7 +112,7 @@ Options.Triggers.push({
     {
       id: 'P10S 大月环',
       type: 'StartsUsing',
-      netRegex: { id: '82A7', source: bossNameUnicode, capture: false },
+      netRegex: { id: '82A7'},
       run: (data, matches) => {
         postAoe(`{"Name":"月环","AoeType":"Donut","CentreType":"PostionValue","CentreValue":{"X":100,"Y":0,"Z":85},"Radius":40,"InnerRadius":12,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":4}`);
        },
@@ -124,13 +123,18 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '8299'},
       run: (data, matches) => {
-        let dur=parseFloat(matches.castTime);
-        if (data.Role === 'tank') {
+        if (data.role === 'tank') {
           // postAoe(`{"Name":"双塔击飞 右","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":105.5,"Y":0,"Z":98.5},"Radius":0.3,"Color":1778450189,"Delay":0,"During":9.5}`);
           // postAoe(`{"Name":"双塔击飞 左","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":94.5,"Y":0,"Z":98.5},"Radius":0.3,"Color":1778450189,"Delay":0,"During":7}`);
 
-          postAoe(`{"Name":"双塔击飞 右","AoeType":"Sector","CentreType":"PostionValue","CentreValue":{"X":108,"Y":0,"Z":100},"Radius":4,"Angle":45,"Rotation":112.5,"Color":2147548928,"Delay":0,"During":9.5}`);
-          postAoe(`{"Name":"双塔击飞 左","AoeType":"Sector","CentreType":"PostionValue","CentreValue":{"X":92,"Y":0,"Z":100},"Radius":4,"Angle":45,"Rotation":-112.5,"Color":2147548928,"Delay":0,"During":7}`);
+          var index=data.PartyIds.indexOf(data.myId);
+          if (index==1) {
+            postAoe(`{"Name":"双塔击飞 右","AoeType":"Sector","CentreType":"PostionValue","CentreValue":{"X":108,"Y":0,"Z":100},"Radius":4,"Angle":45,"Rotation":112.5,"Color":2147548928,"Delay":0,"During":9.5}`);
+          }else{
+            postAoe(`{"Name":"双塔击飞 左","AoeType":"Sector","CentreType":"PostionValue","CentreValue":{"X":92,"Y":0,"Z":100},"Radius":4,"Angle":45,"Rotation":-112.5,"Color":2147548928,"Delay":0,"During":7}`);
+          }
+          
+          
         }else{
           postAoe(`{"Name":"双塔击飞 右","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":108,"Y":0,"Z":100},"Radius":4,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":9.5}`);
           postAoe(`{"Name":"双塔击飞 左","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":92,"Y":0,"Z":100},"Radius":4,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":7}`);
@@ -157,7 +161,8 @@ Options.Triggers.push({
           { "X": 112.5, "Y": 0, "Z": 106.5 },//D4
         ];
         postAoe(`{"Name":"大分散位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Radius":0.5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5.2}`);
-
+        postAoe(`{"Name":"大分散位置连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Thikness":5,"Color":4278255360,"Delay":0,"During":5.2}`)
+          
         
 
 
@@ -203,7 +208,8 @@ Options.Triggers.push({
           { "X": 108, "Y": 0, "Z": 111.5 },//D4
         ];
         postAoe(`{"Name":"读条踩前中后小塔","AoeType":"Circle","CentreType":"PostionValue","CentreValue":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Radius":2,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5.2}`);
-
+        postAoe(`{"Name":"读条踩前中后小塔连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Thikness":5,"Color":4278255360,"Delay":0,"During":5.2}`)
+         
       },
     },
     // boss读条踩前后引导小塔
@@ -224,8 +230,9 @@ Options.Triggers.push({
           { "X": 110, "Y": 0, "Z": 112 },//D4
         ];
 
-        postAoe(`{"Name":"读条踩前中后小塔","AoeType":"Circle","CentreType":"PostionValue","CentreValue":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Radius":2,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":6.2}`);
-
+        postAoe(`{"Name":"读条踩前后小塔","AoeType":"Circle","CentreType":"PostionValue","CentreValue":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Radius":2,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":6.2}`);
+        postAoe(`{"Name":"读条踩前后小塔连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":${JSON.stringify(twPos[data.PartyIds.indexOf(data.myId)])},"Thikness":5,"Color":4278255360,"Delay":0,"During":6.2}`)
+         
 
       },
     },
@@ -282,7 +289,7 @@ Options.Triggers.push({
       type: 'Ability',
       netRegex: { id: '6854'},
       run: (data, matches) => {
-        postAoe(`{"Name":"Rect Example","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":50,"Width":6,"Rotation":0,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5.7}`);
+        postAoe(`{"Name":"万魔殿熔毁 分摊","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":0x${matches.targetId},"Length":50,"Width":6,"Rotation":0,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":5.7}`);
        },
     },
 
@@ -297,14 +304,29 @@ Options.Triggers.push({
       netRegex: { effectId: ['E70','DDE','DDF'] },
       run: (data, matches) => {
         var d=parseFloat(matches.duration)-3;
+        var indexM = data.PartyIds.indexOf(data.myId);
+        var indexT = data.PartyIds.indexOf(parseInt(matches.targetId,16));
         if (matches.effectId=='E70') {
-          postAoe(`{"Name":"44分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":${d},"During":3}`)
+          var mDps=(indexM == 0 || indexM == 1 || indexM == 2 || indexM == 3)?false:true;
+          var tDps=(indexT == 0 || indexT == 1 || indexT == 2 || indexT == 3)?false:true;
+          if (mDps==tDps) {
+            var col=data.triggerSetConfig.SafeAoeCol;
+          }else{
+            var col=data.triggerSetConfig.DangerAoeCol;
+          }
+          postAoe(`{"Name":"44分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":4,"Color":${col},"Delay":${d},"During":3}`)
         }
         if (matches.effectId=='DDF') {
-          postAoe(`{"Name":"2222分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":4,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":${d},"During":3}`)
+          var pid= data.PartyIds[partnerMap[data.PartyIds.indexOf(data.myId)]];
+          if (data.PartyIds[indexT]==pid || data.PartyIds[indexT]==data.myId) {
+            var col=data.triggerSetConfig.SafeAoeCol;
+          }else{
+            var col=data.triggerSetConfig.DangerAoeCol;
+          }
+          postAoe(`{"Name":"2222分摊","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":4,"Color":${col},"Delay":${d},"During":3}`)
         }
-        if (matches.effectId=='DDE') {
-          postAoe(`{"Name":"分散","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":4,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":${d},"During":3}`)
+        if (matches.effectId == 'DDE') {
+          postAoe(`{"Name":"分散","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":6,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":${d},"During":3}`)
         }
       },
     },

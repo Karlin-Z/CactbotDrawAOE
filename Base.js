@@ -1,4 +1,4 @@
-let pipeAoe=false;
+let pipeAoe=true;
 let aoeport = 9588; //aoe监听的端口
 function postAoe(data) {
   if (pipeAoe) {
@@ -98,12 +98,17 @@ Options.Triggers.push({
   ],
   initData: () => {
     setTimeout(() => {
-      fetch(`http://127.0.0.1:${aoeport}/GetData`, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: "Team"
-      });
+
+        if (pipeAoe){
+          sendExtraLogCommand(`GetData`,"Team");
+        }else{
+          fetch(`http://127.0.0.1:${aoeport}/GetData`, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: "Team"
+          });
+        }
     }, 1000);
     return {
     };
@@ -126,14 +131,11 @@ Options.Triggers.push({
         let pInfo=JSON.parse(matches.Str);
         data.PartyInfos = pInfo;
         data.PartyIds=[];
-        data.PartyIds.push(pInfo[0].Id);
-        data.PartyIds.push(pInfo[1].Id);
-        data.PartyIds.push(pInfo[2].Id);
-        data.PartyIds.push(pInfo[3].Id);
-        data.PartyIds.push(pInfo[4].Id);
-        data.PartyIds.push(pInfo[5].Id);
-        data.PartyIds.push(pInfo[6].Id);
-        data.PartyIds.push(pInfo[7].Id);
+        for (let i = 0; i < data.PartyInfos.length; i++) {
+          data.PartyIds[i]=(pInfo[i].Id);
+        }
+        
+        
 
 
         if (data.triggerSetConfig.PPex_DrawBase_ChangePlayer) {

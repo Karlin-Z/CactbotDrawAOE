@@ -27,6 +27,19 @@ function requestPartyList() {
 const sendExtraLogCommand = (command,info) => {
   callOverlayHandler({ call: 'ExtraLog', c: `${command}`, p: `${info}` });
 }
+function Move(cmd) {
+  if (pipeAoe){
+    sendExtraLogCommand(`Move`,`${cmd}`);
+  }else{
+    fetch(`http://127.0.0.1:${aoeport}/Move`, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: `${cmd}`
+    });
+  }
+ 
+}
 
 const RotatePointFromCentre = (point, centre, angle) => {
   let rot=(1-(Math.atan2(point.x-centre.x,point.y-centre.y)/Math.PI))%2*180;
@@ -105,10 +118,14 @@ const getHeadmarkerId = (data, matches) => {
 };
 const centerX = 100;
 const centerY = 100;
+
+
+
+
+
 Options.Triggers.push({
   id: 'AnabaseiosTheNinthCircleSavage_Draw',
   zoneId: ZoneId.AnabaseiosTheNinthCircleSavage,
-  timelineFile: 'p9s.txt',
   config: [
     {
       id: "AoeSendMode",
@@ -116,6 +133,12 @@ Options.Triggers.push({
       type: "select",
       options: { en: { "网络": "Http", "管道": "Pipe" } },
       default: "Http",
+    },
+    {
+      id: "PPex_P9s_AutoGym",
+      name: { en: "自动跑一运" },
+      type: "checkbox",
+      default: false,
     },
     {
       id: "DebugMode",
@@ -153,6 +176,10 @@ Options.Triggers.push({
     },
   ],
   initData: () => {
+    setTimeout(() => {
+      Move(`Clear`);
+      // sendCommand(`/e Clear`)
+    }, 5000);
     return {
       一运球pos: [],
       麻将Id: [],
@@ -164,10 +191,21 @@ Options.Triggers.push({
     };
   },
   triggers: [
-    
+    {
+      id: '设定发送方式',
+      type: 'StartsUsing',
+      netRegex: { id: '814C', capture: false },
+      suppressSeconds: 20,
+      run: async (data, matches) => {
+        if (data.triggerSetConfig.AoeSendMode === 'Http')
+          pipeAoe = false;
+        if (data.triggerSetConfig.AoeSendMode === 'Pipe')
+          pipeAoe = true;
+      },
+    },
     // 头顶点名解析
     {
-      id: 'P9S Headmarker Tracker',
+      id: 'P9S 头顶点名解析',
       type: 'HeadMarker',
       netRegex: {},
       condition: (data) => data.decOffset === undefined,
@@ -224,28 +262,28 @@ Options.Triggers.push({
           for (let i = 0; i < 4; i++) {
             postAoe(`{"Name":"强化火","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":12,"Color":838926206,"Delay":0,"During":${Dur}}`);
           }
-          postAoe(`{"Name":"普通冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":14,"Color":1073742079,"Delay":0,"During":${Dur}}`);
+          postAoe(`{"Name":"普通冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":14,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":${Dur}}`);
         }
         if ((data.双重咒文=='8154' || data.双重咒文=='8184') && matches.id=='8123') {
           // 短冰火强化冰
           for (let i = 0; i < 4; i++) {
             postAoe(`{"Name":"普通火","AoeType":"Circle","CentreType":"ActorId","CentreValue":${data.PartyIds[i]},"Radius":6,"Color":838926206,"Delay":0,"During":${Dur}}`);
           }
-          postAoe(`{"Name":"强化冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":0,"During":${Dur}}`);
+          postAoe(`{"Name":"强化冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":${Dur}}`);
         }
         if ((data.双重咒文=='8155' || data.双重咒文=='8185') && matches.id=='8123') {
           // 短冰雷强化冰
           for (let i = 0; i < 8; i++) {
             postAoe(`{"Name":"普通雷","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[i]},"Length":20,"Width":8,"Rotation":0.0,"Color":1073807359,"Delay":2,"During":${Dur-2}}`);
           }
-          postAoe(`{"Name":"强化冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":0,"During":${Dur}}`);
+          postAoe(`{"Name":"强化冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":${Dur}}`);
         }
         if ((data.双重咒文=='8155' || data.双重咒文=='8185') && matches.id=='815C') {
           // 短冰雷强化雷
           for (let i = 0; i < 8; i++) {
             postAoe(`{"Name":"强化雷","AoeType":"Rect","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"TrackType":"IdTrack","TrackValue":${data.PartyIds[i]},"Length":20,"Width":16,"Rotation":0.0,"Color":1073807359,"Delay":2,"During":${Dur-2}}`);
           }
-          postAoe(`{"Name":"普通冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":14,"Color":1073742079,"Delay":0,"During":${Dur}}`);
+          postAoe(`{"Name":"普通冰","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":14,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":0,"During":${Dur}}`);
         }
         delete data.双重咒文;
         
@@ -259,7 +297,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: ['8161'] },
       run: (data, matches) => {
-        postAoe(`{"Name":"射线钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":8,"Color":1073807359,"Delay":2,"During":6}`);
+        postAoe(`{"Name":"射线钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":8,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":2,"During":6}`);
       },
     },
     // P9S 连转脚
@@ -274,25 +312,25 @@ Options.Triggers.push({
         if (matches.id=='8167') {
           // 钢铁+正面
           postAoe(`{"Name":"连转脚钢铁+正面 钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":12,"Color":1073807359,"Delay":0,"During":7}`);
-          postAoe(`{"Name":"连转脚钢铁+正面 正面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":10}`);
-          postAoe(`{"Name":"连转脚钢铁+正面 后月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":7,"During":6}`);
+          postAoe(`{"Name":"连转脚钢铁+正面 正面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":0.0,"Color":1073807359,"Delay":6.5,"During":3.5}`);
+          postAoe(`{"Name":"连转脚钢铁+正面 后月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073807359,"Delay":7,"During":6}`);
         }
         if (matches.id=='8168') {
           // 月环+正面
-          postAoe(`{"Name":"连转脚月环+正面 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":0,"During":7}`);
-          postAoe(`{"Name":"连转脚月环+正面 正面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":10}`);
+          postAoe(`{"Name":"连转脚月环+正面 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073807359,"Delay":0,"During":7}`);
+          postAoe(`{"Name":"连转脚月环+正面 正面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":0.0,"Color":1073807359,"Delay":6.5,"During":3.5}`);
           postAoe(`{"Name":"连转脚月环+正面 后钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":12,"Color":1073807359,"Delay":7,"During":6}`);
         }
         if (matches.id=='8169') {
           // 钢铁+背面
           postAoe(`{"Name":"连转脚钢铁+背面 钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":12,"Color":1073807359,"Delay":0,"During":7}`);
-          postAoe(`{"Name":"连转脚钢铁+背面 背面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":180.0,"Color":1073807359,"Delay":0,"During":10}`);
-          postAoe(`{"Name":"连转脚钢铁+背面 后月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":7,"During":6}`);
+          postAoe(`{"Name":"连转脚钢铁+背面 背面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":180.0,"Color":1073807359,"Delay":6.5,"During":3.5}`);
+          postAoe(`{"Name":"连转脚钢铁+背面 后月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073807359,"Delay":7,"During":6}`);
         }
         if (matches.id=='816A') {
           // 月环+背面
-          postAoe(`{"Name":"连转脚月环+背面 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073742079,"Delay":0,"During":7}`);
-          postAoe(`{"Name":"连转脚月环+背面 背面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":180,"Color":1073807359,"Delay":0,"During":10}`);
+          postAoe(`{"Name":"连转脚月环+背面 月环","AoeType":"Donut","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"InnerRadius":8,"Color":1073807359,"Delay":0,"During":7}`);
+          postAoe(`{"Name":"连转脚月环+背面 背面","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":20,"Angle":180,"Rotation":180,"Color":1073807359,"Delay":6.5,"During":3.5}`);
           postAoe(`{"Name":"连转脚月环+背面 后钢铁","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":12,"Color":1073807359,"Delay":7,"During":6}`);
         }
       },
@@ -347,7 +385,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '878E'},
       run: async (data, matches) => {
-        postAoe(`{"Name":"前方炎连击","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":40,"Angle":180,"Rotation":0.0,"Color":1073807359,"Delay":0,"During":5}`);
+        postAoe(`{"Name":"前方炎连击","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":40,"Angle":180,"Rotation":0.0,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9,"During":5}`);
       },
     },
     // 后方炎连击
@@ -356,7 +394,7 @@ Options.Triggers.push({
       type: 'StartsUsing',
       netRegex: { id: '878F'},
       run: async (data, matches) => {
-        postAoe(`{"Name":"后方炎连击","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":40,"Angle":180,"Rotation":180,"Color":1073807359,"Delay":0,"During":5}`);
+        postAoe(`{"Name":"后方炎连击","AoeType":"Sector","CentreType":"ActorId","CentreValue":0x${matches.sourceId},"Radius":40,"Angle":180,"Rotation":180,"Color":${data.triggerSetConfig.DangerAoeCol},"Delay":9,"During":5}`);
       },
     },
     
@@ -419,8 +457,8 @@ Options.Triggers.push({
 
 
         postAoe(`{"Name":"一运球${data.一运计数}aoe","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Radius":6,"Color":1073807359,"Delay":4.3,"During":2.2}`);
-        postAoe(`{"Name":"一运塔${data.一运计数}踩塔范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Radius":3,"Color":1073807104,"Delay":6.5,"During":2.5}`);
-        postAoe(`{"Name":"一运冰${data.一运计数}aoe","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":20,"Color":1073807359,"Delay":6,"During":3}`);
+        postAoe(`{"Name":"一运塔${data.一运计数}踩塔范围","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Radius":3,"Color":1073807104,"Delay":6.5,"During":3.3}`);
+        postAoe(`{"Name":"一运冰${data.一运计数}aoe","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${matches.targetId},"Radius":20,"Color":1073807359,"Delay":6,"During":3.1}`);
         postAoe(`{"Name":"一运火${data.一运计数}aoe","AoeType":"Circle","CentreType":"ActorId","CentreValue":0x${data.麻将Id[data.一运计数*2]},"Radius":6,"Color":1073807359,"Delay":4.5,"During":4.5}`);
 
 
@@ -443,28 +481,60 @@ Options.Triggers.push({
 
         let ballPos=data.一运球pos[data.麻将Id[data.一运计数*2-1]];
 
+        let dur=4.7;
+        let delay=4.3;
+        if (data.一运计数==1) {
+          dur=9;
+          delay=0;
+        }
+
+        
+
         if (matches.target==data.me) {
-          postAoe(`{"Name":"一运冰${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${(ballPos.x-100)*1.9+100},"Y":0,"Z":${(ballPos.y-100)*1.9+100}},"Radius":0.5,"Color":1073807104,"Delay":4.3,"During":4.7}`);
-          postAoe(`{"Name":"一运冰${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${(ballPos.x-100)*1.9+100},"Y":0,"Z":${(ballPos.y-100)*1.9+100}},"Thikness":5,"Color":4278255360,"Delay":4.3,"During":4.7}`)
+          postAoe(`{"Name":"一运冰${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${(ballPos.x-100)*1.7+100},"Y":0,"Z":${(ballPos.y-100)*1.7+100}},"Radius":0.5,"Color":1073807104,"Delay":${delay},"During":${dur}}`);
+          postAoe(`{"Name":"一运冰${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${(ballPos.x-100)*1.7+100},"Y":0,"Z":${(ballPos.y-100)*1.7+100}},"Thikness":5,"Color":4278255360,"Delay":${delay},"During":${dur}}`)
+          if (data.triggerSetConfig.PPex_P9s_AutoGym){
+            setTimeout(() => {
+              Move(`{"X":${(ballPos.x-100)*1.7+100},"Y":0,"Z":${(ballPos.y-100)*1.7+100}}`);
+            }, delay*1000);
+          }
         }
 
        
         if (parseInt(data.麻将Id[data.一运计数*2],16)==data.myId) {
           let ePos=RotatePointFromCentre(ballPos,{x:100,y:100},rot);
-          postAoe(`{"Name":"一运火${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${(ePos.x-100)*1.9+100},"Y":0,"Z":${(ePos.y-100)*1.9+100}},"Radius":0.5,"Color":1073807104,"Delay":4.3,"During":4.7}`);
-          postAoe(`{"Name":"一运火${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${(ePos.x-100)*1.9+100},"Y":0,"Z":${(ePos.y-100)*1.9+100}},"Thikness":5,"Color":4278255360,"Delay":4.3,"During":4.7}`)
+          postAoe(`{"Name":"一运火${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${(ePos.x-100)*1.9+100},"Y":0,"Z":${(ePos.y-100)*1.9+100}},"Radius":0.5,"Color":1073807104,"Delay":${delay},"During":${dur}}`);
+          postAoe(`{"Name":"一运火${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${(ePos.x-100)*1.9+100},"Y":0,"Z":${(ePos.y-100)*1.9+100}},"Thikness":5,"Color":4278255360,"Delay":${delay},"During":${dur}}`)
+          if (data.triggerSetConfig.PPex_P9s_AutoGym){
+            setTimeout(() => {
+              Move(`{"X":${(ePos.x-100)*1.9+100},"Y":0,"Z":${(ePos.y-100)*1.9+100}}`);
+            }, delay*1000);
+          }
         }
 
         if (parseInt(data.麻将Id[tw],16)==data.myId) {
-          postAoe(`{"Name":"一运塔${data.一运计数} 等待位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Radius":0.5,"Color":1073807104,"Delay":4.3,"During":2.2}`);
-          postAoe(`{"Name":"一运塔${data.一运计数} 等待连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Thikness":5,"Color":4278255360,"Delay":4.3,"During":2.5}`)
-          postAoe(`{"Name":"一运塔${data.一运计数} 踩塔位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Radius":0.5,"Color":1073807104,"Delay":6.5,"During":2.5}`);
-          postAoe(`{"Name":"一运塔${data.一运计数} 踩塔连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Thikness":5,"Color":4278255360,"Delay":6.5,"During":2.5}`)
+          postAoe(`{"Name":"一运塔${data.一运计数} 等待位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Radius":0.5,"Color":1073807104,"Delay":${delay},"During":${7-delay}}`);
+          postAoe(`{"Name":"一运塔${data.一运计数} 等待连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Thikness":5,"Color":4278255360,"Delay":${delay},"During":${7-delay}}`)
+          postAoe(`{"Name":"一运塔${data.一运计数} 踩塔位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Radius":0.5,"Color":1073807104,"Delay":7,"During":2.5}`);
+          postAoe(`{"Name":"一运塔${data.一运计数} 踩塔连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}},"Thikness":5,"Color":4278255360,"Delay":7,"During":2.5}`)
+          if (data.triggerSetConfig.PPex_P9s_AutoGym){
+            setTimeout(() => {
+              Move(`{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}}`);
+            }, delay*1000);
+            setTimeout(() => {
+              Move(`{"X":${100-(ballPos.x-100)*1.6},"Y":0,"Z":${100-(ballPos.y-100)*1.6}}`);
+            }, 7000);
+          }
         }
         if(matches.target!=data.me && parseInt(data.麻将Id[data.一运计数*2],16)!=data.myId && parseInt(data.麻将Id[tw],16)!=data.myId)
         {
-          postAoe(`{"Name":"一运闲${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Radius":0.5,"Color":1073807104,"Delay":4.3,"During":4.7}`);
-          postAoe(`{"Name":"一运闲${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Thikness":5,"Color":4278255360,"Delay":4.3,"During":4.7}`)
+          postAoe(`{"Name":"一运闲${data.一运计数} 位置","AoeType":"Circle","CentreType":"PostionValue","CentreValue":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Radius":0.5,"Color":1073807104,"Delay":${delay},"During":${dur}}`);
+          postAoe(`{"Name":"一运闲${data.一运计数} 连线","AoeType":"Link","CentreType":"ActorId","CentreValue":${data.myId},"Centre2Type":"PostionValue","Centre2Value":{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}},"Thikness":5,"Color":4278255360,"Delay":${delay},"During":${dur}}`)
+          if (data.triggerSetConfig.PPex_P9s_AutoGym){
+            setTimeout(() => {
+              Move(`{"X":${100-(ballPos.x-100)*0.8},"Y":0,"Z":${100-(ballPos.y-100)*0.8}}`);
+            }, delay*1000);
+          }
         }
 
       },
