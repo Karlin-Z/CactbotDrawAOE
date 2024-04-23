@@ -13,12 +13,12 @@ function postAoe(data) {
   }
 }
 function tp(data) {
-    fetch(`http://127.0.0.1:${9909}/Setting`, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: `TP ${data}`
-    });
+    // fetch(`http://127.0.0.1:${9909}/Setting`, {
+    //   method: "POST",
+    //   mode: "no-cors",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: `TP ${data}`
+    // });
 }
 const sendExtraLogCommand = (command,info) => {
   callOverlayHandler({ call: 'ExtraLog', c: `${command}`, p: `${info}` });
@@ -455,10 +455,10 @@ Options.Triggers.push({
           var epos={"X":100+(x-100)/22.5*11,"Y":0,"Z":100+(y-100)/22.5*11}
         }
         postAoe(`{"Name":"戒律小怪 光直剑 MT拉光","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":${JSON.stringify(epos)},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":0,"During":4}`);
-        tp(JSON.stringify(epos));
+        // tp(JSON.stringify(epos));
         postAoe(`{"Name":"戒律小怪 光直剑 MT拉光回位","AoeType":"Goto","CentreType":"ActorId","CentreValue":${data.myId},"DestinationType":"PostionValue","DestinationValue":{"X":88,"Y":0,"Z":100},"Thikness":5,"Color":${data.triggerSetConfig.SafeAoeCol},"Delay":4,"During":5}`);
         setTimeout(() => {
-          tp(`{"X":88,"Y":0,"Z":100}`);
+          // tp(`{"X":88,"Y":0,"Z":100}`);
         }, 4200);
       }
     },

@@ -164,6 +164,12 @@ Options.Triggers.push({
       default: false,
     },
     {
+      id: "P5_Face",
+      name: { en: "P5小电视自动面向" },
+      type: "checkbox",
+      default: false,
+    },
+    {
       id: "P5_2Tower",
       name: { en: "P5二运踩塔方式" },
       type: "select",
@@ -2332,6 +2338,7 @@ Options.Triggers.push({
           head=head+Math.PI;
         }
         if (data.P5一运小电视.id==data.myId) {
+          if(!data.triggerSetConfig.P5_Face) return;
           setFace(head,6,5);
         }
       },
